@@ -1,42 +1,50 @@
-using System.Collections.Generic;
 using MHLib.Hexagon;
+using ProceduralLife.Map;
+using ProceduralLife.MapEditor;
 using UnityEngine;
 
-public class HexTilePlacer : MonoBehaviour
+namespace ProceduralLife
 {
-    [SerializeField]
-    private Camera mainCamera;
-    
-    [SerializeField]
-    private GameObject hexTile;
-
-    private readonly Plane groundPlane = new(Vector3.up, Vector3.zero);
-
-    private readonly float tileSize = 2f / Mathf.Sqrt(3f);
-
-    private readonly Dictionary<Vector2Int, GameObject> placedTiles = new();
-    
-    private void Update()
+    public class HexTilePlacer : MonoBehaviour
     {
-        if (Input.GetMouseButton(0))
+        [SerializeField]
+        private Camera mainCamera;
+        
+        [SerializeField]
+        private TileDefinition hexTile;
+        
+        private readonly Plane groundPlane = new(Vector3.up, Vector3.zero);
+        
+        private readonly float tileSize = 2f / Mathf.Sqrt(3f);
+
+        private MapData mapData;
+
+        private void Awake()
         {
-            Vector2Int? cellPosition = HexagonHelper.ScreenToCell(Input.mousePosition, this.mainCamera, this.groundPlane, this.tileSize);
-            if (cellPosition == null || this.placedTiles.ContainsKey(cellPosition.Value))
-                return;
-            
-            Vector3 worldPosition = HexagonHelper.CellToWorld(cellPosition.Value, this.tileSize);
-            
-            GameObject newTile = Instantiate(this.hexTile, worldPosition, Quaternion.identity);
-            this.placedTiles.Add(cellPosition.Value, newTile);
+            this.mapData = new MapData();
         }
-        else if (Input.GetMouseButton(1))
+
+        private void Update()
         {
-            Vector2Int? cellPosition = HexagonHelper.ScreenToCell(Input.mousePosition, this.mainCamera, this.groundPlane, this.tileSize);
-            if (cellPosition == null || !this.placedTiles.ContainsKey(cellPosition.Value))
-                return;
-            
-            Destroy(this.placedTiles[cellPosition.Value]);
-            this.placedTiles.Remove(cellPosition.Value);
+            // WIP, waiting for proper input management and command handling. This is only here for testing
+            if (Input.GetMouseButton(0))
+            {
+                Vector2Int? tilePosition = HexagonHelper.ScreenToTile(Input.mousePosition, this.mainCamera, this.groundPlane, this.tileSize);
+                if (tilePosition == null || this.mapData.Tiles.ContainsKey(tilePosition.Value))
+                    return;
+
+                AddTileCommand newCommand = new(this.mapData, tilePosition.Value, this.hexTile);
+                newCommand.Do();
+            }
+            else if (Input.GetMouseButton(1))
+            {
+                Vector2Int? tilePosition = HexagonHelper.ScreenToTile(Input.mousePosition, this.mainCamera, this.groundPlane, this.tileSize);
+                if (tilePosition == null || !this.mapData.Tiles.ContainsKey(tilePosition.Value))
+                    return;
+                
+                RemoveTileCommand newCommand = new(this.mapData, tilePosition.Value);
+                newCommand.Do();
+            }
         }
     }
 }

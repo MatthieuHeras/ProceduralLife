@@ -1,0 +1,16 @@
+{
+    "name": "ProceduralLife",
+    "rootNamespace": "",
+    "references": [
+        "GUID:5decf32b9e873e643b3e2ab962856bb7"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
