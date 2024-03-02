@@ -43,9 +43,9 @@ namespace MHLib.Hexagon
             new(1, -1),     // Bottom Right
         };
 
-        public static float HorizontalSpacing(float tileSize = 1f) => tileSize * SQRT3_DIVIDED_BY_2;
-        public static float HorizontalSpacingOffset(float tileSize = 1f) => HorizontalSpacing(tileSize) / 2f;
-        public static float VerticalSpacing(float tileSize = 1f) => tileSize * 0.75f;
+        public static float HorizontalSpacing(float tileSize) => tileSize * SQRT3_DIVIDED_BY_2;
+        public static float HorizontalSpacingOffset(float tileSize) => HorizontalSpacing(tileSize) / 2f;
+        public static float VerticalSpacing(float tileSize) => tileSize * 0.75f;
         
         #region HEXAGON_COORDINATES
         /// <summary> Convert an axial coordinates position to a cube coordinates position : https://www.redblobgames.com/grids/hexagons/#conversions </summary>
@@ -84,7 +84,7 @@ namespace MHLib.Hexagon
         }
         
         /// <summary> Convert a world position to an hexagon position : https://www.redblobgames.com/grids/hexagons/#rounding </summary>
-        public static Vector2Int WorldToCell(Vector3 pos, float tileSize = 1f)
+        public static Vector2Int WorldToCell(Vector3 pos, float tileSize)
         {
             // Convert mouse pos to axial coordinates position : https://www.redblobgames.com/grids/hexagons/#pixel-to-hex
             Vector2 axialPos = new((SQRT3_DIVIDED_BY_3 * pos.x - ONE_THIRD * pos.z) * 2f / tileSize, TWO_THIRD * pos.z * 2f / tileSize);
@@ -99,7 +99,7 @@ namespace MHLib.Hexagon
         }
 
         /// <summary> Convert an hexagon position (offset coordinates) to a world position (x,z) : https://www.redblobgames.com/grids/hexagons/#hex-to-pixel </summary>
-        public static Vector3 CellToWorld(Vector2Int offsetPos, float tileSize = 1f)
+        public static Vector3 CellToWorld(Vector2Int offsetPos, float tileSize)
         {
             float xPos = (offsetPos.x + 0.5f * (offsetPos.y & 1)) * HorizontalSpacing(tileSize);
             float yPos = offsetPos.y * VerticalSpacing(tileSize);
@@ -107,7 +107,7 @@ namespace MHLib.Hexagon
         }
         
         /// <summary> Convert an hexagon position (offset coordinates) to a world position in 2D (x,y) : https://www.redblobgames.com/grids/hexagons/#hex-to-pixel </summary>
-        public static Vector2 CellToWorld2D(Vector2Int offsetPos, float tileSize = 1f)
+        public static Vector2 CellToWorld2D(Vector2Int offsetPos, float tileSize)
         {
             float xPos = tileSize * SQRT3_DIVIDED_BY_2 * (offsetPos.x + 0.5f * (offsetPos.y & 1));
             float yPos = tileSize * 0.75f * offsetPos.y;
@@ -115,35 +115,35 @@ namespace MHLib.Hexagon
         }
         
         /// <summary> Convert a screen position to an hexagon position (offset coordinates) </summary>
-        public static Vector2Int? ScreenToCell(Vector3 screenPosition, Camera camera, Plane tilemapPlane)
+        public static Vector2Int? ScreenToCell(Vector3 screenPosition, Camera camera, Plane tilemapPlane, float tileSize)
         {
             Ray ray = camera.ScreenPointToRay(screenPosition);
             if (tilemapPlane.Raycast(ray, out float dist))
             {
                 Vector3 position = ray.GetPoint(dist);
-                return WorldToCell(position);
+                return WorldToCell(position, tileSize);
             }
 
             return null;
         }
         
         /// <summary> Convert a viewport position to an hexagon position (offset coordinates) </summary>
-        public static Vector2Int? ViewportToCell(Vector3 screenPosition, Camera camera, Plane tilemapPlane)
+        public static Vector2Int? ViewportToCell(Vector3 screenPosition, Camera camera, Plane tilemapPlane, float tileSize)
         {
             Ray ray = camera.ViewportPointToRay(screenPosition);
             if (tilemapPlane.Raycast(ray, out float dist))
             {
                 Vector3 position = ray.GetPoint(dist);
-                return WorldToCell(position);
+                return WorldToCell(position, tileSize);
             }
 
             return null;
         }
         
         /// <summary> Convert an hexagon position (offset coordinates) to a viewport position </summary>
-        public static Vector2 CellToViewport(Vector2Int cellPosition, Camera camera)
+        public static Vector2 CellToViewport(Vector2Int cellPosition, Camera camera, float tileSize)
         {
-            Vector3 worldPosition = CellToWorld(cellPosition);
+            Vector3 worldPosition = CellToWorld(cellPosition, tileSize);
             return camera.WorldToViewportPoint(worldPosition);
         }
 
@@ -249,7 +249,7 @@ namespace MHLib.Hexagon
         #endregion NEIGHBOURS
         
         // One row out of two is offset in X, compared to squares.
-        public static float GetWorldPositionXOffset(int yPosition, float tileSize = 1f)
+        public static float GetWorldPositionXOffset(int yPosition, float tileSize)
         {
             return yPosition % 2 == 0 ? 0 : HorizontalSpacingOffset(tileSize);
         }
