@@ -1,7 +1,8 @@
-# This .gitignore file should be placed at the root of your Unity project directory
-#
-# Get latest from https://github.com/github/gitignore/blob/main/Unity.gitignore
-#
+# Kenney's assets aren't public domain and must not be pushed on a public github
+/ProceduralLife/Assets/View/Kenney
+/ProceduralLife/Assets/View/Kenney.meta
+
+
 /ProceduralLife/[Ll]ibrary/
 /ProceduralLife/[Tt]emp/
 /ProceduralLife/[Oo]bj/
