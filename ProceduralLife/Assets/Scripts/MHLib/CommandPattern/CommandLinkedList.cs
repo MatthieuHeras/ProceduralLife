@@ -27,7 +27,7 @@ namespace MHLib.CommandPattern
             
             newCommand.Do();
         }
-
+        
         public void Undo()
         {
             if (this.currentNode == null)
