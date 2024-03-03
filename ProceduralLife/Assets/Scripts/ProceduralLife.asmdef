@@ -2,7 +2,8 @@
     "name": "ProceduralLife",
     "rootNamespace": "ProceduralLife",
     "references": [
-        "GUID:5decf32b9e873e643b3e2ab962856bb7"
+        "GUID:5decf32b9e873e643b3e2ab962856bb7",
+        "GUID:75469ad4d38634e559750d17036d5f7c"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

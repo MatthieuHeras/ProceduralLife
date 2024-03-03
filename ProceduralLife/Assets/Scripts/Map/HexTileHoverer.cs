@@ -12,7 +12,7 @@ namespace ProceduralLife.Map
         [SerializeField, Required]
         private Camera mainCamera;
 
-        private Vector2Int? currentTilePosition = null;
+        public Vector2Int? CurrentTilePosition { get; private set; }= null;
         
         public static event Action<Vector2Int?> HoverTileEvent = delegate {  };
 
@@ -20,9 +20,9 @@ namespace ProceduralLife.Map
         {
             Vector2Int? newTilePosition = HexagonHelper.ScreenToTile(Input.mousePosition, this.mainCamera, GROUND_PLANE, Constants.TILE_SIZE);
 
-            if (newTilePosition != this.currentTilePosition)
+            if (newTilePosition != this.CurrentTilePosition)
             {
-                this.currentTilePosition = newTilePosition;
+                this.CurrentTilePosition = newTilePosition;
                 HoverTileEvent.Invoke(newTilePosition);
             }
         }
