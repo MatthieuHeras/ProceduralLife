@@ -1,6 +1,6 @@
 {
     "name": "ProceduralLife",
-    "rootNamespace": "",
+    "rootNamespace": "ProceduralLife",
     "references": [
         "GUID:5decf32b9e873e643b3e2ab962856bb7"
     ],
