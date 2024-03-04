@@ -7,6 +7,9 @@ namespace ProceduralLife.Map
     public class TileDefinition : ScriptableObject
     {
         [field: SerializeField, Required]
+        public string Name { get; private set; }
+        
+        [field: SerializeField, Required]
         public GameObject View { get; private set; }
     }
 }

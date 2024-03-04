@@ -14,15 +14,18 @@ namespace ProceduralLife.MapEditor
     /// </summary>
     public abstract class AMapEditorCommand : ACommand
     {
-        protected AMapEditorCommand(MapData mapData)
+        protected AMapEditorCommand(MapData mapData, MapEditorData mapEditorData)
         {
             this.mapData = mapData;
+            this.mapEditorData = mapEditorData;
         }
 
         protected readonly MapData mapData;
+        protected readonly MapEditorData mapEditorData;
 
         public static event Action<Vector2Int, TileDefinition> AddedTileEvent = delegate {  };
         public static event Action<Vector2Int> RemovedTileEvent = delegate {  };
+        public static event Action<TileDefinition> ChangedPaintedTileEvent = delegate {  };
         
         protected void AddTile(Vector2Int tilePosition, TileDefinition tile)
         {
@@ -40,6 +43,15 @@ namespace ProceduralLife.MapEditor
             this.mapData.Tiles.Remove(tilePosition);
 
             RemovedTileEvent.Invoke(tilePosition);
+        }
+        
+        protected void ChangePaintedTile(TileDefinition newPaintedTile)
+        {
+            Assert.IsTrue(this.mapEditorData.PaintedTileDefinition != newPaintedTile);
+
+            this.mapEditorData.PaintedTileDefinition = newPaintedTile;
+            
+            ChangedPaintedTileEvent.Invoke(newPaintedTile);
         }
     }
 }

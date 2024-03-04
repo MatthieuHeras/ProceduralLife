@@ -12,4 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5e142238737a43038ba091e3697d30ac, type: 3}
   m_Name: ForestTile
   m_EditorClassIdentifier: 
+  <Name>k__BackingField: Forest
   <View>k__BackingField: {fileID: 919132149155446097, guid: e077dafdc1eee4c4fb51fdda4039ed0c, type: 3}

@@ -5,7 +5,7 @@ namespace ProceduralLife.MapEditor
 {
     public class RemoveTileCommand : AMapEditorCommand
     {
-        public RemoveTileCommand(MapData mapData, Vector2Int tilePosition) : base(mapData)
+        public RemoveTileCommand(MapData mapData, MapEditorData mapEditorData, Vector2Int tilePosition) : base(mapData, mapEditorData)
         {
             this.tilePosition = tilePosition;
         }

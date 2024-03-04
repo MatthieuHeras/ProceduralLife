@@ -5,7 +5,7 @@ namespace ProceduralLife.MapEditor
 {
     public class AddTileCommand : AMapEditorCommand
     {
-        public AddTileCommand(MapData mapData, Vector2Int tilePosition, TileDefinition tileDefinition) : base(mapData)
+        public AddTileCommand(MapData mapData, MapEditorData mapEditorData, Vector2Int tilePosition, TileDefinition tileDefinition) : base(mapData, mapEditorData)
         {
             this.tilePosition = tilePosition;
             this.tileDefinition = tileDefinition;

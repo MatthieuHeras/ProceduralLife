@@ -9,10 +9,6 @@ namespace ProceduralLife.MapEditor
         [SerializeField, Required]
         private MapEditorCommandHandler commandHandler;
         
-        // [TODO] Remove this and handle changing tile definition
-        [SerializeField, Required]
-        private TileDefinition defaultTileDefinition;
-
         private readonly MapData mapData = new();
         private readonly MapEditorData mapEditorData = new();
         
@@ -21,19 +17,29 @@ namespace ProceduralLife.MapEditor
         public void GenerateAddTileCommand(Vector2Int tilePosition)
         {
             if (this.mapEditorData.PaintedTileDefinition != null && !this.mapData.Tiles.ContainsKey(tilePosition))
-                this.GenerateCommand(new AddTileCommand(this.mapData, tilePosition, this.mapEditorData.PaintedTileDefinition));
+                this.GenerateCommand(new AddTileCommand(this.mapData, this.mapEditorData, tilePosition, this.mapEditorData.PaintedTileDefinition));
         }
         
         public void GenerateRemoveTileCommand(Vector2Int tilePosition)
         {
             if (this.mapData.Tiles.ContainsKey(tilePosition))
-                this.GenerateCommand(new RemoveTileCommand(this.mapData, tilePosition));
+                this.GenerateCommand(new RemoveTileCommand(this.mapData, this.mapEditorData, tilePosition));
         }
         
-        // [TODO] Remove this and handle changing tile definition
-        private void Awake()
+        public void GenerateChangePaintedTileCommand(TileDefinition newPaintedTile)
         {
-            this.mapEditorData.PaintedTileDefinition = this.defaultTileDefinition;
+            if (this.mapEditorData.PaintedTileDefinition != newPaintedTile)
+                this.GenerateCommand(new ChangePaintedTileCommand(this.mapData, this.mapEditorData, newPaintedTile));
+        }
+        
+        private void OnEnable()
+        {
+            TilePicker.TilePickedEvent += this.OnTilePicked;
+        }
+
+        private void OnTilePicked(TileDefinition newTileDefinition)
+        {
+            this.GenerateChangePaintedTileCommand(newTileDefinition);
         }
     }
 }
