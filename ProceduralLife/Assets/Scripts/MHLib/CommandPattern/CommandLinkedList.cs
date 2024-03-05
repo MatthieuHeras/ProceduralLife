@@ -10,6 +10,9 @@ namespace MHLib.CommandPattern
         private LinkedListNode<TCommand> currentNode;
         private LinkedListNode<TCommand> nextNode;
         
+        public TCommand CurrentCommand => this.currentNode?.Value;
+        public TCommand NextCommand => this.nextNode?.Value;
+        
         public void Do(TCommand newCommand)
         {
             LinkedListNode<TCommand> newNode = new(newCommand);
