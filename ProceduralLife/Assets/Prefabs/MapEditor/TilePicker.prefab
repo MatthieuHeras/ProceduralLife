@@ -53,6 +53,7 @@ MonoBehaviour:
   tiles:
   - {fileID: 11400000, guid: 250b2e9c0006fd24099f21a3aee39e2a, type: 2}
   - {fileID: 11400000, guid: b89a532ab9c474049be1f6fa1af31e22, type: 2}
+  - {fileID: 11400000, guid: 1fc1d37cb423dbc4f956f5ad8d4d2b24, type: 2}
   toggleAnchor: {fileID: 2691665623906093525}
   togglePrefab: {fileID: 4477731014951495488, guid: 95581b78c8da0fb49abdf0292f838a2e, type: 3}
   toggleGroup: {fileID: 4131306862321417325}
