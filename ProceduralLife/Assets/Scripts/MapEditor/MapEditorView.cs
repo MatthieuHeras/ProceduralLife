@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using MHLib.Hexagon;
 using ProceduralLife.Map;
+using Sirenix.OdinInspector;
 using UnityEngine;
 using UnityEngine.Assertions;
 
@@ -8,6 +9,9 @@ namespace ProceduralLife.MapEditor
 {
     public class MapEditorView : MonoBehaviour
     {
+        [SerializeField, Required]
+        private Transform tilesAnchor;
+        
         private readonly Dictionary<Vector2Int, GameObject> tilesView = new();
         
         private void OnTileAdded(Vector2Int tilePosition, TileDefinition tileDefinition)
@@ -15,7 +19,7 @@ namespace ProceduralLife.MapEditor
             Assert.IsTrue(!this.tilesView.ContainsKey(tilePosition));
             
             Vector3 worldPosition = HexagonHelper.TileToWorld(tilePosition, Constants.TILE_SIZE);
-            GameObject newTileView = Instantiate(tileDefinition.View, worldPosition, tileDefinition.View.transform.rotation);
+            GameObject newTileView = Instantiate(tileDefinition.View, worldPosition, tileDefinition.View.transform.rotation, this.tilesAnchor);
             
             this.tilesView.Add(tilePosition, newTileView);
         }
