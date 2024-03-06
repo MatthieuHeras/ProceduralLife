@@ -18,18 +18,21 @@ namespace ProceduralLife.Simulation
         public override void Do()
         {
             this.oldPosition = this.entity.Position;
-
+            
+            Debug.Log("Do");
             this.entity.Move(this.newPosition);
         }
 
         public override void Undo()
         {
-            throw new System.NotImplementedException();
+            Debug.Log("Undo");
+            this.entity.Move(this.oldPosition);
         }
 
         public override void Redo()
         {
-            base.Redo();
+            Debug.Log("Redo");
+            this.entity.Move(this.newPosition);
         }
     }
 }

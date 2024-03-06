@@ -7,6 +7,11 @@ namespace ProceduralLife.Simulation
 {
     public class SimulationEntity : ASimulationElement
     {
+        public SimulationEntity(Vector2Int position)
+        {
+            this.Position = position;
+        }
+        
         public Vector2Int Position { get; private set; }
         
         public override ASimulationCommand Apply(SimulationContext context)
@@ -34,6 +39,7 @@ namespace ProceduralLife.Simulation
         public void Move(Vector2Int newPosition)
         {
             this.Position = newPosition;
+            Debug.Log($"Move to {newPosition}");
         }
     }
 }
