@@ -1,7 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using MHLib.Hexagon;
 using ProceduralLife.Map;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 namespace ProceduralLife.Simulation
 {
@@ -13,6 +15,8 @@ namespace ProceduralLife.Simulation
         }
         
         public Vector2Int Position { get; private set; }
+        
+        public event Action<Vector2Int> PositionChangedEvent = delegate { };
         
         public override ASimulationCommand Apply(SimulationContext context)
         {
@@ -39,6 +43,7 @@ namespace ProceduralLife.Simulation
         public void Move(Vector2Int newPosition)
         {
             this.Position = newPosition;
+            this.PositionChangedEvent.Invoke(newPosition);
             Debug.Log($"Move to {newPosition}");
         }
     }

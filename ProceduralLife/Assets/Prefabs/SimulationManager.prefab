@@ -45,3 +45,5 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   commandGenerator: {fileID: 0}
+  entityView: {fileID: 1136233462868858159, guid: c1408628e8b97784bb90c1202222cd8d, type: 3}
+  timeScale: 1

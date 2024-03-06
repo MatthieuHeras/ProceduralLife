@@ -1,4 +1,5 @@
 ﻿using ProceduralLife.MapEditor;
+using ProceduralLife.Simulation.View;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
@@ -9,6 +10,9 @@ namespace ProceduralLife.Simulation
         // [TODO] Tmp way to access MapData, will need proper way later on.
         [SerializeField, Required]
         private MapEditorCommandGenerator commandGenerator;
+        
+        [SerializeField, Required]
+        private SimulationEntityView entityView;
 
         [SerializeField]
         private float timeScale = 1f;
@@ -24,7 +28,11 @@ namespace ProceduralLife.Simulation
             this.startedSimulation = true;
             this.simulationTime = new SimulationTime(this.commandGenerator.MapData);
             
-            this.simulationTime.InsertUpcomingEntity(new SimulationEntity(Vector2Int.zero));
+            SimulationEntity firstEntity = new(Vector2Int.zero);
+            SimulationEntityView firstEntityView = Instantiate(this.entityView);
+            firstEntityView.Init(firstEntity);
+            
+            this.simulationTime.InsertUpcomingEntity(firstEntity);
         }
 
         [Button]
