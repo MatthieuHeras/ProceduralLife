@@ -4,7 +4,7 @@ namespace ProceduralLife.Simulation
 {
     public class MoveSimulationCommand : ASimulationCommand
     {
-        public MoveSimulationCommand(ulong executionMoment, SimulationEntity entity, Vector2Int newPosition) : base(executionMoment)
+        public MoveSimulationCommand(SimulationEntity entity, Vector2Int newPosition)
         {
             this.entity = entity;
             this.newPosition = newPosition;

@@ -20,7 +20,7 @@ namespace ProceduralLife.Simulation
         
         public override ASimulationCommand Apply(SimulationContext context)
         {
-            this.ExecutionMoment = context.SimulationTime.CurrentTime + 2000;
+            this.ExecutionMoment += 2000;
             context.SimulationTime.InsertUpcomingEntity(this);
             
             Vector2Int[] offsets = HexagonHelper.GetTileOffsets(this.Position.y);
@@ -37,7 +37,7 @@ namespace ProceduralLife.Simulation
             int randomIndex = Random.Range(0, neighbours.Count);
             Vector2Int newPosition = neighbours[randomIndex];
             
-            return new MoveSimulationCommand(context.SimulationTime.CurrentTime, this, newPosition);
+            return new MoveSimulationCommand(this, newPosition);
         }
         
         public void Move(Vector2Int newPosition)

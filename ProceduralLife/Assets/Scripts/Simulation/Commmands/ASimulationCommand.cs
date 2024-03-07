@@ -4,12 +4,12 @@ namespace ProceduralLife.Simulation
 {
     public abstract class ASimulationCommand : ACommand
     {
-        protected ASimulationCommand(ulong executionMoment)
+        // In milliseconds
+        public ulong ExecutionMoment { get; private set; }
+        
+        public void SetExecutionMoment(ulong executionMoment)
         {
             this.ExecutionMoment = executionMoment;
         }
-
-        // In milliseconds
-        public readonly ulong ExecutionMoment;
     }
 }

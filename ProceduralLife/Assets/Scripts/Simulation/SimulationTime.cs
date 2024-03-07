@@ -64,8 +64,10 @@ namespace ProceduralLife.Simulation
             {
                 ASimulationElement upcomingElement = this.upcomingElements[0];
                 this.upcomingElements.RemoveAt(0);
-                
+
+                ulong executionMoment = upcomingElement.ExecutionMoment;
                 ASimulationCommand newCommand = upcomingElement.Apply(this.SimulationContext);
+                newCommand.SetExecutionMoment(executionMoment);
                 this.commandLinkedList.Do(newCommand);
             }
         }
