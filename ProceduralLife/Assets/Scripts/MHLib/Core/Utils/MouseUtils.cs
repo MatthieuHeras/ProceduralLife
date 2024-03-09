@@ -1,9 +1,9 @@
-﻿using UnityEngine.InputSystem;
-using UnityEngine.InputSystem.UI;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.UI;
 
-namespace MHLib.MHLib.Utils
+namespace MHLib.Utils
 {
     public static class MouseUtils
     {

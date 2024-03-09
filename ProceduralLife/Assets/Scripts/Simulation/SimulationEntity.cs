@@ -9,16 +9,32 @@ namespace ProceduralLife.Simulation
 {
     public class SimulationEntity : ASimulationElement
     {
-        public SimulationEntity(Vector2Int position)
+        public SimulationEntity(ulong insertMoment, Vector2Int position)
+            : base(insertMoment)
         {
             this.Position = position;
         }
         
         public Vector2Int Position { get; private set; }
         
-        public event Action<Vector2Int> PositionChangedEvent = delegate { };
+        public event Action<Vector2Int, ulong, ulong> MoveStartEvent = delegate { };
+        public event Action<Vector2Int, ulong, ulong> MoveStartBackwardEvent = delegate { };
+        public event Action<Vector2Int> MoveEndEvent = delegate { };
+        public event Action<Vector2Int> MoveEndBackwardEvent = delegate { };
         
         public override ASimulationCommand Apply(SimulationContext context)
+        {
+            ASimulationCommand command = this.isMoving ? this.ApplyMoveEnd(context) : this.ApplyMoveStart(context);
+            this.isMoving = !this.isMoving;
+            
+            return command;
+        }
+        
+        #region STATE
+        private bool isMoving = false;
+        private Vector2Int targetTile;
+        
+        private ASimulationCommand ApplyMoveStart(SimulationContext context)
         {
             this.ExecutionMoment += 2000;
             context.SimulationTime.InsertUpcomingEntity(this);
@@ -37,14 +53,40 @@ namespace ProceduralLife.Simulation
             int randomIndex = Random.Range(0, neighbours.Count);
             Vector2Int newPosition = neighbours[randomIndex];
             
-            return new MoveSimulationCommand(this, newPosition);
+            return new MoveStartSimulationCommand(this, newPosition, 2000);
+        }
+
+        private ASimulationCommand ApplyMoveEnd(SimulationContext context)
+        {
+            context.SimulationTime.InsertUpcomingEntity(this);
+            
+            return new MoveEndSimulationCommand(this, this.targetTile, 2000);
         }
         
-        public void Move(Vector2Int newPosition)
+        #endregion STATE
+        
+        public void MoveStart(Vector2Int newTarget, ulong startMoment, ulong duration)
+        {
+            this.targetTile = newTarget;
+            this.MoveStartEvent.Invoke(newTarget, startMoment, duration);
+        }
+        
+        public void MoveEnd(Vector2Int newPosition)
         {
             this.Position = newPosition;
-            this.PositionChangedEvent.Invoke(newPosition);
-            Debug.Log($"Move to {newPosition}");
+            this.MoveEndEvent.Invoke(newPosition);
+        }
+
+        public void MoveStartBackward(Vector2Int oldPosition, ulong startMoment, ulong duration)
+        {
+            this.Position = oldPosition;
+            this.MoveStartBackwardEvent.Invoke(oldPosition, startMoment, duration);
+        }
+
+        public void MoveEndBackward()
+        {
+            this.targetTile = this.Position;
+            this.MoveEndBackwardEvent.Invoke(this.Position);
         }
     }
 }

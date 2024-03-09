@@ -1,4 +1,5 @@
-﻿using ProceduralLife.MapEditor;
+﻿using System.Collections.Generic;
+using ProceduralLife.MapEditor;
 using ProceduralLife.Simulation.View;
 using Sirenix.OdinInspector;
 using UnityEngine;
@@ -21,39 +22,50 @@ namespace ProceduralLife.Simulation
         private bool startedSimulation = false;
 
         private bool forward = true;
+
+        private readonly List<SimulationEntity> entities = new();
+
+        public void ChangeTimeScale(float newTimeScale)
+        {
+            this.timeScale = newTimeScale;
+        }
         
         [Button]
-        private void StartSimulation()
+        public void AddSheep()
         {
-            this.startedSimulation = true;
-            this.simulationTime = new SimulationTime(this.commandGenerator.MapData);
-            
-            SimulationEntity firstEntity = new(Vector2Int.zero);
+            SimulationEntity entity = new(this.simulationTime.CurrentTime, Vector2Int.zero);
             SimulationEntityView firstEntityView = Instantiate(this.entityView);
-            firstEntityView.Init(firstEntity);
+            firstEntityView.Init(entity);
             
-            this.simulationTime.InsertUpcomingEntity(firstEntity);
+            this.entities.Add(entity);
+            this.simulationTime.InsertUpcomingEntity(entity);
         }
-
+        
         [Button]
-        private void GoBackward()
+        public void GoBackward()
         {
             Debug.LogWarning("Backward");
             this.forward = false;
         }
-
+        
         [Button]
-        private void GoForward()
+        public void GoForward()
         {
             Debug.LogWarning("Forward");
             this.forward = true;
         }
-
+    
+        private void Start()
+        {
+            this.startedSimulation = true;
+            this.simulationTime = new SimulationTime(this.commandGenerator.MapData);
+        }
+        
         private void Update()
         {
-            if (!this.startedSimulation)
+            if (this.entities.Count == 0)
                 return;
-
+            
             ulong deltaTime = (ulong)(Time.deltaTime * this.timeScale * 1000f);
             
             if (this.forward)

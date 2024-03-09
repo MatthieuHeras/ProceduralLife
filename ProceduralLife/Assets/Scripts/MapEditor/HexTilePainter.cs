@@ -1,5 +1,5 @@
 using System;
-using MHLib.MHLib.Utils;
+using MHLib.Utils;
 using ProceduralLife.Map;
 using Sirenix.OdinInspector;
 using UnityEngine;
