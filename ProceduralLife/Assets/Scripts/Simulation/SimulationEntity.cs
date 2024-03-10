@@ -17,7 +17,7 @@ namespace ProceduralLife.Simulation
         
         public Vector2Int Position { get; private set; }
         
-        public event Action<Vector2Int, ulong, ulong> MoveStartEvent = delegate { };
+        public event Action<Vector2Int, ulong, ulong, bool> MoveStartEvent = delegate { };
         public event Action<Vector2Int, ulong, ulong> MoveStartBackwardEvent = delegate { };
         public event Action<Vector2Int> MoveEndEvent = delegate { };
         public event Action<Vector2Int> MoveEndBackwardEvent = delegate { };
@@ -55,7 +55,7 @@ namespace ProceduralLife.Simulation
             
             return new MoveStartSimulationCommand(this, newPosition, 2000);
         }
-
+        
         private ASimulationCommand ApplyMoveEnd(SimulationContext context)
         {
             context.SimulationTime.InsertUpcomingEntity(this);
@@ -65,28 +65,16 @@ namespace ProceduralLife.Simulation
         
         #endregion STATE
         
-        public void MoveStart(Vector2Int newTarget, ulong startMoment, ulong duration)
+        public void MoveStart(Vector2Int newTarget, ulong startMoment, ulong duration, bool forward)
         {
             this.targetTile = newTarget;
-            this.MoveStartEvent.Invoke(newTarget, startMoment, duration);
+            this.MoveStartEvent.Invoke(newTarget, startMoment, duration, forward);
         }
         
         public void MoveEnd(Vector2Int newPosition)
         {
             this.Position = newPosition;
             this.MoveEndEvent.Invoke(newPosition);
-        }
-
-        public void MoveStartBackward(Vector2Int oldPosition, ulong startMoment, ulong duration)
-        {
-            this.Position = oldPosition;
-            this.MoveStartBackwardEvent.Invoke(oldPosition, startMoment, duration);
-        }
-
-        public void MoveEndBackward()
-        {
-            this.targetTile = this.Position;
-            this.MoveEndBackwardEvent.Invoke(this.Position);
         }
     }
 }

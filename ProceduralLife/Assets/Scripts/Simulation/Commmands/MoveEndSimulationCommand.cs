@@ -20,20 +20,16 @@ namespace ProceduralLife.Simulation
         public override void Do()
         {
             this.oldPosition = this.entity.Position;
-            
-            Debug.Log("Do");
             this.entity.MoveEnd(this.newPosition);
         }
         
         public override void Undo()
         {
-            Debug.Log("Undo");
-            this.entity.MoveStartBackward(this.oldPosition, this.ExecutionMoment, this.duration);
+            this.entity.MoveStart(this.oldPosition, this.ExecutionMoment, this.duration, false);
         }
         
         public override void Redo()
         {
-            Debug.Log("Redo");
             this.entity.MoveEnd(this.newPosition);
         }
     }

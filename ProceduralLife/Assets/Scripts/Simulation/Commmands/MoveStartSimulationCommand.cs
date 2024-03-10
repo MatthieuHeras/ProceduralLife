@@ -14,23 +14,22 @@ namespace ProceduralLife.Simulation
         private readonly SimulationEntity entity;
         private readonly Vector2Int newPosition;
         private readonly ulong duration;
+        private Vector2Int oldPosition;
         
         public override void Do()
         {
-            Debug.Log("Do");
-            this.entity.MoveStart(this.newPosition, this.ExecutionMoment, this.duration);
+            this.oldPosition = this.entity.Position;
+            this.entity.MoveStart(this.newPosition, this.ExecutionMoment, this.duration, true);
         }
         
         public override void Undo()
         {
-            Debug.Log("Undo");
-            this.entity.MoveEndBackward();
+            this.entity.MoveEnd(this.oldPosition);
         }
         
         public override void Redo()
         {
-            Debug.Log("Redo");
-            this.entity.MoveStart(this.newPosition, this.ExecutionMoment, this.duration);
+            this.entity.MoveStart(this.newPosition, this.ExecutionMoment, this.duration, true);
         }
     }
 }

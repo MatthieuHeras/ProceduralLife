@@ -27,12 +27,12 @@ namespace ProceduralLife.Simulation.View
             this.transform.position = MHLib.Math.Remap(this.moveStartMoment, this.moveEndMoment, this.moveStartPosition, this.moveEndPosition, newTime);
         }
         
-        private void OnMoveStart(Vector2Int newPosition, ulong startMoment, ulong duration)
+        private void OnMoveStart(Vector2Int newPosition, ulong startMoment, ulong duration, bool forward)
         {
             this.isMoving = true;
             
             this.moveStartMoment = startMoment;
-            this.moveEndMoment = startMoment + duration;
+            this.moveEndMoment = forward ? (startMoment + duration) : (startMoment - duration);
             
             Vector3 worldPosition = HexagonHelper.TileToWorld(newPosition, Constants.TILE_SIZE);
             
@@ -40,9 +40,9 @@ namespace ProceduralLife.Simulation.View
             
             this.moveStartPosition = selfTransform.position;
             this.moveEndPosition = worldPosition;
-
+            
             Vector3 positionDiff = worldPosition - this.moveStartPosition;
-            float rotation = Mathf.Atan2(positionDiff.z, positionDiff.x) / Mathf.PI * 180f;
+            float rotation = (Mathf.Atan2(positionDiff.z, positionDiff.x) + (forward ? 0f : Mathf.PI)) / Mathf.PI * 180f;
             selfTransform.rotation = Quaternion.Euler(0f, -rotation, 0f);
         }
         
@@ -54,48 +54,17 @@ namespace ProceduralLife.Simulation.View
             this.transform.position = worldPosition;
         }
         
-        private void OnMoveStartBackward(Vector2Int oldPosition, ulong startMoment, ulong duration)
-        {
-            this.isMoving = true;
-            
-            this.moveStartMoment = startMoment;
-            this.moveEndMoment = startMoment - duration;
-            
-            Vector3 worldPosition = HexagonHelper.TileToWorld(oldPosition, Constants.TILE_SIZE);
-            
-            Transform selfTransform = this.transform;
-            
-            this.moveStartPosition = selfTransform.position;
-            this.moveEndPosition = worldPosition;
-
-            Vector3 positionDiff = this.moveStartPosition - worldPosition;
-            float rotation = Mathf.Atan2(positionDiff.z, positionDiff.x) / Mathf.PI * 180f;
-            selfTransform.rotation = Quaternion.Euler(0f, -rotation, 0f);
-        }
-        
-        private void OnMoveEndBackward(Vector2Int oldPosition)
-        {
-            this.isMoving = false;
-            
-            Vector3 worldPosition = HexagonHelper.TileToWorld(oldPosition, Constants.TILE_SIZE);
-            this.transform.position = worldPosition;
-        }
-        
         private void HookToEntity()
         {
             this.entity.MoveStartEvent += this.OnMoveStart;
-            this.entity.MoveStartBackwardEvent += this.OnMoveStartBackward;
             this.entity.MoveEndEvent += this.OnMoveEnd;
-            this.entity.MoveEndBackwardEvent += this.OnMoveEndBackward;
             SimulationTime.CurrentTimeChanged += this.UpdateTime;
         }
         
         private void UnhookToEntity()
         {
             this.entity.MoveStartEvent -= this.OnMoveStart;
-            this.entity.MoveStartBackwardEvent -= this.OnMoveStartBackward;
             this.entity.MoveEndEvent -= this.OnMoveEnd;
-            this.entity.MoveEndBackwardEvent -= this.OnMoveEndBackward;
             SimulationTime.CurrentTimeChanged -= this.UpdateTime;
         }
         
