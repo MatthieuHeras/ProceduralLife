@@ -53,14 +53,14 @@ namespace ProceduralLife.Simulation
             int randomIndex = Random.Range(0, neighbours.Count);
             Vector2Int newPosition = neighbours[randomIndex];
             
-            return new MoveStartSimulationCommand(this, newPosition, 2000);
+            return new MoveStartSimulationCommand(this, this, newPosition, 2000);
         }
         
         private ASimulationCommand ApplyMoveEnd(SimulationContext context)
         {
             context.SimulationTime.InsertUpcomingEntity(this);
             
-            return new MoveEndSimulationCommand(this, this.targetTile, 2000);
+            return new MoveEndSimulationCommand(this, this, this.targetTile, 2000);
         }
         
         #endregion STATE

@@ -4,14 +4,15 @@ namespace ProceduralLife.Simulation
 {
     public class MoveEndSimulationCommand : ASimulationCommand
     {
-        public MoveEndSimulationCommand(SimulationEntity entity, Vector2Int newPosition, ulong duration)
+        public MoveEndSimulationCommand(ASimulationElement responsibleElement, SimulationEntity targetEntity, Vector2Int newPosition, ulong duration)
+            : base(responsibleElement)
         {
-            this.entity = entity;
+            this.targetEntity = targetEntity;
             this.newPosition = newPosition;
             this.duration = duration;
         }
         
-        private readonly SimulationEntity entity;
+        private readonly SimulationEntity targetEntity;
         private readonly Vector2Int newPosition;
         private readonly ulong duration;
         
@@ -19,18 +20,18 @@ namespace ProceduralLife.Simulation
         
         public override void Do()
         {
-            this.oldPosition = this.entity.Position;
-            this.entity.MoveEnd(this.newPosition);
+            this.oldPosition = this.targetEntity.Position;
+            this.targetEntity.MoveEnd(this.newPosition);
         }
         
         public override void Undo()
         {
-            this.entity.MoveStart(this.oldPosition, this.ExecutionMoment, this.duration, false);
+            this.targetEntity.MoveStart(this.oldPosition, this.ExecutionMoment, this.duration, false);
         }
         
         public override void Redo()
         {
-            this.entity.MoveEnd(this.newPosition);
+            this.targetEntity.MoveEnd(this.newPosition);
         }
     }
 }
