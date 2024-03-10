@@ -18,9 +18,7 @@ namespace ProceduralLife.Simulation
         public Vector2Int Position { get; private set; }
         
         public event Action<Vector2Int, ulong, ulong, bool> MoveStartEvent = delegate { };
-        public event Action<Vector2Int, ulong, ulong> MoveStartBackwardEvent = delegate { };
         public event Action<Vector2Int> MoveEndEvent = delegate { };
-        public event Action<Vector2Int> MoveEndBackwardEvent = delegate { };
         
         public override ASimulationCommand Apply(SimulationContext context)
         {
