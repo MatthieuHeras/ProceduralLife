@@ -42,6 +42,13 @@ namespace ProceduralLife.Simulation
         }
         
         [Button]
+        public void Add100Sheep()
+        {
+            for (int i = 0; i < 100; i++)
+                this.AddSheep();
+        }
+        
+        [Button]
         public void GoBackward()
         {
             Debug.LogWarning("Backward");
