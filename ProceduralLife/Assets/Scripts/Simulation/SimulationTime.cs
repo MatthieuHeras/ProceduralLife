@@ -74,13 +74,8 @@ namespace ProceduralLife.Simulation
         
         private void UndoCommands()
         {
-            ASimulationCommand currentCommand = this.commandLinkedList.CurrentCommand;
-
-            while (currentCommand != null && this.CurrentTime < currentCommand.ExecutionMoment)
-            {
+            while (this.commandLinkedList.CurrentCommand is { } currentCommand && this.CurrentTime < currentCommand.ExecutionMoment)
                 this.commandLinkedList.Undo();
-                currentCommand = this.commandLinkedList.CurrentCommand;
-            }
         }
         
         public void InsertUpcomingEntity(SimulationEntity upcomingEntity)
