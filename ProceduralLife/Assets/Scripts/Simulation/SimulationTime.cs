@@ -32,14 +32,19 @@ namespace ProceduralLife.Simulation
         #region TIME WAY
         public void Forward()
         {
-            if (this.iterateMethod == this.IterateForward)
+            if (this.iterateMethod == this.IterateForward || this.iterateMethod == this.IterateReplay)
                 return;
-
+            
+            this.AliveElements.Sort((element1, element2) => element1.NextExecutionMoment.IsBefore(element2.NextExecutionMoment) ? -1 : 1);
             this.iterateMethod = this.IterateReplay;
         }
         
         public void Backward()
         {
+            if (this.iterateMethod == this.IterateBackward)
+                return;
+            
+            this.AliveElements.Sort((element1, element2) => element1.PreviousExecutionMoment.IsBefore(element2.PreviousExecutionMoment) ? -1 : 1);
             this.iterateMethod = this.IterateBackward;
         }
         #endregion TIME WAY
@@ -243,6 +248,13 @@ namespace ProceduralLife.Simulation
                         SimulationMoment previousMoment = new(element.NextExecutionMoment);
                         element.Redo();
                         element.PreviousExecutionMoment = previousMoment;
+
+                        int elementIndex = 0;
+                        while (elementIndex < this.AliveElements.Count - 1 && this.AliveElements[elementIndex + 1].NextExecutionMoment.IsBefore(element.NextExecutionMoment))
+                            elementIndex++;
+                        
+                        this.AliveElements.RemoveAt(0);
+                        this.AliveElements.Insert(elementIndex, element);
                     }
                 }
                 else

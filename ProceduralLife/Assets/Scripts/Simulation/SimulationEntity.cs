@@ -58,10 +58,17 @@ namespace ProceduralLife.Simulation
 
         public override void Redo()
         {
-            this.NextExecutionMoment.Time += 10000;
-            //Assert.IsTrue(this.currentIndex < );
-            this.isMoving = !this.isMoving;
+            Assert.IsTrue(this.currentIndex < this.stateData.Count - 1);
+            
             this.currentIndex++;
+
+            if (this.isMoving)
+                this.MoveEnd(this.targetTile);
+            else
+                this.MoveStart(this.stateData[this.currentIndex].Target, this.stateData[this.currentIndex].ExecutionMoment.Time, 2000, true);
+            
+            this.NextExecutionMoment = this.stateData[this.currentIndex].NextExecutionMoment;
+            this.isMoving = !this.isMoving;
         }
         
         private bool isMoving = false;
@@ -85,14 +92,15 @@ namespace ProceduralLife.Simulation
             
             this.MoveStart(newPosition, this.NextExecutionMoment.Time, 2000, true);
             
-            this.stateData.Add(new TestStateData(this.NextExecutionMoment, this.Position, this.targetTile));
-            
+            SimulationMoment executionMoment = this.NextExecutionMoment;
             context.SimulationTime.DelayElement(this, 2000);
+            this.stateData.Add(new TestStateData(executionMoment, this.NextExecutionMoment, this.Position, this.targetTile));
+            
         }
         
         private void ApplyMoveEnd()
         {
-            this.stateData.Add(new TestStateData(this.NextExecutionMoment, this.Position, this.targetTile));
+            this.stateData.Add(new TestStateData(this.NextExecutionMoment, this.NextExecutionMoment, this.Position, this.targetTile));
             this.MoveEnd(this.targetTile);
         }
         
