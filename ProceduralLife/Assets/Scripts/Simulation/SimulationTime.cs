@@ -28,6 +28,7 @@ namespace ProceduralLife.Simulation
         private Action<ulong> iterateMethod;
         
         public static event Action<ulong, ulong> CurrentTimeChanged = delegate { };
+        public static event Action<E_IterationMethodType> IterationMethodChanged = delegate { }; 
         
         #region TIME WAY
         public void Forward()
@@ -36,6 +37,7 @@ namespace ProceduralLife.Simulation
                 return;
             
             this.AliveElements.Sort((element1, element2) => element1.NextExecutionMoment.IsBefore(element2.NextExecutionMoment) ? -1 : 1);
+            IterationMethodChanged.Invoke(E_IterationMethodType.REPLAY);
             this.iterateMethod = this.IterateReplay;
         }
         
@@ -45,6 +47,7 @@ namespace ProceduralLife.Simulation
                 return;
             
             this.AliveElements.Sort((element1, element2) => element1.PreviousExecutionMoment.IsBefore(element2.PreviousExecutionMoment) ? -1 : 1);
+            IterationMethodChanged.Invoke(E_IterationMethodType.BACKWARD);
             this.iterateMethod = this.IterateBackward;
         }
         #endregion TIME WAY
@@ -160,6 +163,7 @@ namespace ProceduralLife.Simulation
             this.CurrentTime += replayTime;
             this.ApplyElementsReplay();
             
+            IterationMethodChanged.Invoke(E_IterationMethodType.PLAY);
             this.iterateMethod = this.IterateForward;
             this.IterateForward(forwardDeltaTime);
         }
