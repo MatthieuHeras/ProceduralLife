@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using ProceduralLife.MapEditor;
+﻿using ProceduralLife.MapEditor;
 using ProceduralLife.Simulation.View;
 using Sirenix.OdinInspector;
 using UnityEngine;
@@ -14,17 +13,12 @@ namespace ProceduralLife.Simulation
         
         [SerializeField, Required]
         private SimulationEntityView entityView;
-
+        
         [SerializeField]
         private float timeScale = 1f;
         
         private SimulationTime simulationTime;
-        private bool startedSimulation = false;
-
-        private bool forward = true;
-
-        private readonly List<SimulationEntity> entities = new();
-
+        
         public void ChangeTimeScale(float newTimeScale)
         {
             this.timeScale = newTimeScale;
@@ -33,12 +27,11 @@ namespace ProceduralLife.Simulation
         [Button]
         public void AddSheep()
         {
-            SimulationEntity entity = new(this.simulationTime.CurrentTime, Vector2Int.zero);
+            SimulationEntity entity = new();
             SimulationEntityView firstEntityView = Instantiate(this.entityView);
             firstEntityView.Init(entity);
             
-            this.entities.Add(entity);
-            this.simulationTime.InsertUpcomingEntity(entity);
+            this.simulationTime.InsertElement(entity);
         }
         
         [Button]
@@ -52,33 +45,26 @@ namespace ProceduralLife.Simulation
         public void GoBackward()
         {
             Debug.LogWarning("Backward");
-            this.forward = false;
+            this.simulationTime.Backward();
         }
         
         [Button]
         public void GoForward()
         {
             Debug.LogWarning("Forward");
-            this.forward = true;
+            this.simulationTime.Forward();
         }
     
         private void Start()
         {
-            this.startedSimulation = true;
             this.simulationTime = new SimulationTime(this.commandGenerator.MapData);
         }
         
         private void Update()
         {
-            if (this.entities.Count == 0)
-                return;
-            
             ulong deltaTime = (ulong)(Time.deltaTime * this.timeScale * 1000f);
             
-            if (this.forward)
-                this.simulationTime.IterateForward(deltaTime);
-            else
-                this.simulationTime.IterateBackward(deltaTime);
+            this.simulationTime.Iterate(deltaTime);
         }
     }
 }

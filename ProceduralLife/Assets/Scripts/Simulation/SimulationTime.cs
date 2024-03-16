@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using MHLib.CommandPattern;
 using ProceduralLife.Map;
-using UnityEngine;
+using UnityEngine.Assertions;
 
 namespace ProceduralLife.Simulation
 {
@@ -11,137 +10,260 @@ namespace ProceduralLife.Simulation
         public SimulationTime(MapData mapData)
         {
             this.SimulationContext = new SimulationContext(this, mapData);
+            ASimulationElement.SetupContext(this.SimulationContext);
+            
+            this.iterateMethod = this.IterateForward;
         }
         
-        private readonly CommandLinkedList<ASimulationCommand> commandLinkedList = new();
-        private readonly List<ASimulationElement> upcomingElements = new();
         public readonly SimulationContext SimulationContext;
         
+        // Sorted lists
+        public readonly List<ASimulationElement> DeadElements = new();
+        public readonly List<ASimulationElement> AliveElements = new();
+        public readonly List<ASimulationElement> ToBeBornElements = new();
+        
         public ulong CurrentTime { get; private set; }
+        public ulong PresentTime { get; private set; }
+        
+        private Action<ulong> iterateMethod;
         
         public static event Action<ulong, ulong> CurrentTimeChanged = delegate { };
         
-        public void IterateForward(ulong deltaTime)
+        #region TIME WAY
+        public void Forward()
+        {
+            if (this.iterateMethod == this.IterateForward)
+                return;
+
+            this.iterateMethod = this.IterateReplay;
+        }
+        
+        public void Backward()
+        {
+            this.iterateMethod = this.IterateBackward;
+        }
+        #endregion TIME WAY
+
+        #region ELEMENTS LIFE
+        
+        /// <summary> Use for player inputs. Entities should use their own execution moment, not current time. </summary>
+        public void InsertElement(ASimulationElement element)
+        {
+            this.InsertElement(element, this.CurrentTime);
+        }
+        
+        public void InsertElement(ASimulationElement element, ulong birthTime)
+        {
+            // Inserting in the future is not supported by Undo/Redo
+            Assert.IsTrue(birthTime <= this.CurrentTime);
+
+            int elementIndex = 0;
+            while (elementIndex < this.AliveElements.Count && this.AliveElements[elementIndex].NextExecutionMoment.IsBefore(birthTime))
+                elementIndex++;
+
+            bool isSimultaneous = false;
+            while (elementIndex < this.AliveElements.Count && this.AliveElements[elementIndex].NextExecutionMoment.Time == birthTime)
+            {
+                elementIndex++;
+                isSimultaneous = true;
+            }
+
+            int birthOrder = isSimultaneous ? this.AliveElements[elementIndex - 1].NextExecutionMoment.Order + 1 : 0;
+            SimulationMoment birthMoment = new(birthTime, birthOrder);
+            
+            element.InitBirth(birthMoment);
+            this.AliveElements.Insert(elementIndex, element);
+        }
+
+        public void DelayElement(ASimulationElement element, ulong delay)
+        {
+            Assert.IsTrue(this.AliveElements.Contains(element));
+            Assert.IsTrue(this.AliveElements.Count > 0 && this.AliveElements[0] == element);
+            
+            this.AliveElements.RemoveAt(0);
+            
+            ulong nextExecutionTime = element.NextExecutionMoment.Time + delay;
+            
+            int elementIndex = 0;
+            while (elementIndex < this.AliveElements.Count && this.AliveElements[elementIndex].NextExecutionMoment.IsBefore(nextExecutionTime))
+                elementIndex++;
+            
+            bool isSimultaneous = false;
+            while (elementIndex < this.AliveElements.Count && this.AliveElements[elementIndex].NextExecutionMoment.Time == nextExecutionTime)
+            {
+                elementIndex++;
+                isSimultaneous = true;
+            }
+            
+            int order = isSimultaneous ? this.AliveElements[elementIndex - 1].NextExecutionMoment.Order + 1 : 0;
+            
+            SimulationMoment nextExecutionMoment = new(nextExecutionTime, order);
+            element.NextExecutionMoment = nextExecutionMoment;
+            
+            this.AliveElements.Insert(elementIndex, element);
+        }
+        
+        public void KillElement(ASimulationElement element)
+        {
+            Assert.IsTrue(this.AliveElements.Contains(element));
+            this.AliveElements.Remove(element);
+            this.DeadElements.Add(element);
+        }
+        #endregion ELEMENTS LIFE
+        
+        #region ITERATE
+        public void Iterate(ulong deltaTime)
         {
             ulong previousTime = this.CurrentTime;
-            
-            this.CurrentTime += deltaTime;
-            
-            this.RedoUndoneCommands();
-            this.ApplyUpcomingElements();
+            this.iterateMethod(deltaTime);
             
             CurrentTimeChanged.Invoke(previousTime, this.CurrentTime);
         }
         
-        public void IterateBackward(ulong deltaTime)
+        private void IterateForward(ulong deltaTime)
         {
-            ulong previousTime = this.CurrentTime;
+            this.CurrentTime += deltaTime;
+            this.PresentTime = this.CurrentTime;
             
+            this.ApplyElementsForward();
+        }
+        
+        private void IterateBackward(ulong deltaTime)
+        {
             if (deltaTime > this.CurrentTime)
                 this.CurrentTime = 0;
             else
                 this.CurrentTime -= deltaTime;
             
-            this.UndoCommands();
-            
-            CurrentTimeChanged.Invoke(previousTime, this.CurrentTime);
+            this.ApplyElementsBackward();
         }
         
-        private void RedoUndoneCommands()
+        private void IterateReplay(ulong deltaTime)
         {
-            ASimulationCommand nextCommand = this.commandLinkedList.NextCommand;
+            Assert.IsTrue(this.PresentTime > this.CurrentTime);
             
-            while (nextCommand != null && this.CurrentTime >= nextCommand.ExecutionMoment)
+            if (this.CurrentTime + deltaTime < this.PresentTime)
             {
-                this.commandLinkedList.Redo();
-                nextCommand = this.commandLinkedList.NextCommand;
+                this.CurrentTime += deltaTime;
+                this.ApplyElementsReplay();
+                return;
             }
+            
+            ulong replayTime = this.PresentTime - this.CurrentTime;
+            ulong forwardDeltaTime = deltaTime - replayTime;
+            
+            this.CurrentTime += replayTime;
+            this.ApplyElementsReplay();
+            
+            this.iterateMethod = this.IterateForward;
+            this.IterateForward(forwardDeltaTime);
         }
-        
-        private void ApplyUpcomingElements()
-        {
-            while (this.upcomingElements.Count > 0 && this.CurrentTime >= this.upcomingElements[0].ExecutionMoment)
-            {
-                ASimulationElement upcomingElement = this.upcomingElements[0];
-                this.upcomingElements.RemoveAt(0);
+        #endregion ITERATE
 
-                ulong executionMoment = upcomingElement.ExecutionMoment;
-                ASimulationCommand newCommand = upcomingElement.Apply(this.SimulationContext);
-                newCommand.SetExecutionMoment(executionMoment);
-                this.commandLinkedList.Do(newCommand);
-            }
-        }
-        
-        private void UndoCommands()
+        #region APPLY ELEMENTS
+        private void ApplyElementsForward()
         {
-            while (this.commandLinkedList.CurrentCommand is { } currentCommand && this.CurrentTime < currentCommand.ExecutionMoment)
-                this.commandLinkedList.Undo();
-        }
-        
-        public void InsertUpcomingEntity(SimulationEntity upcomingEntity)
-        {
-            int insertIndex = 0;
-            while (insertIndex < this.upcomingElements.Count && upcomingEntity.ExecutionMoment > this.upcomingElements[insertIndex].ExecutionMoment)
-                insertIndex++;
-            
-            this.upcomingElements.Insert(insertIndex, upcomingEntity);
-        }
-        
-        public void SpeedUpEntity(SimulationEntity entity, ulong time)
-        {
-            int entityIndex = this.FindEntityIndex(entity);
-            
-            if (entityIndex == -1)
+            while (this.AliveElements.Count > 0 && this.AliveElements[0].NextExecutionMoment.IsBeforeOrEqual(this.CurrentTime))
             {
-                Debug.LogError($"Tried to speed up {entity} but it could not be found.");
-                return;
+                ASimulationElement element = this.AliveElements[0];
+                SimulationMoment previousMoment = new(element.NextExecutionMoment);
+                element.Do();
+                element.PreviousExecutionMoment = previousMoment;
             }
-            
-            entity.ExecutionMoment -= time;
-            
-            int newEntityIndex = entityIndex;
-            while (newEntityIndex > 0 && this.upcomingElements[newEntityIndex - 1].ExecutionMoment > entity.ExecutionMoment)
-                newEntityIndex--;
-            
-            if (newEntityIndex == entityIndex)
-                return;
-            
-            this.upcomingElements.RemoveAt(entityIndex);
-            this.upcomingElements.Insert(newEntityIndex, entity);
         }
         
-        public void SlowDownEntity(SimulationEntity entity, ulong time)
+        private void ApplyElementsBackward()
         {
-            int entityIndex = this.FindEntityIndex(entity);
-            
-            if (entityIndex == -1)
+            while (this.AliveElements.Count > 0 && this.AliveElements[^1].PreviousExecutionMoment.IsAfterOrEqual(this.CurrentTime)
+                   || this.DeadElements.Count > 0 && this.DeadElements[^1].DeathMoment.IsAfterOrEqual(this.CurrentTime))
             {
-                Debug.LogError($"Tried to slow down {entity} but it could not be found.");
-                return;
+                bool applyAlive = this.AliveElements.Count > 0 && (this.DeadElements.Count == 0 || this.AliveElements[^1].PreviousExecutionMoment.IsAfter(this.DeadElements[^1].DeathMoment));
+                
+                if (applyAlive)
+                {
+                    ASimulationElement element = this.AliveElements[^1];
+                    
+                    SimulationMoment nextMoment = new(element.PreviousExecutionMoment);
+                    element.Undo();
+                    element.NextExecutionMoment = nextMoment;
+                    
+                    if (element.BirthMoment == nextMoment)
+                    {
+                        this.ToBeBornElements.Insert(0, element);
+                        this.AliveElements.RemoveAt(this.AliveElements.Count - 1);
+                    }
+                    else
+                    {
+                        int elementIndex = this.AliveElements.Count - 1;
+                        while (elementIndex > 0 && this.AliveElements[elementIndex - 1].PreviousExecutionMoment.IsAfter(element.PreviousExecutionMoment))
+                            elementIndex--;
+
+                        this.AliveElements.RemoveAt(this.AliveElements.Count - 1);
+                        this.AliveElements.Insert(elementIndex, element);
+                    }
+                }
+                else
+                {
+                    ASimulationElement element = this.DeadElements[^1];
+                    this.DeadElements.RemoveAt(this.DeadElements.Count - 1);
+                    
+                    this.ResurrectElement(element);
+                }
             }
+        }
+
+        private void ResurrectElement(ASimulationElement element)
+        {
+            int elementIndex = this.AliveElements.Count;
+
+            while (elementIndex > 0 && element.PreviousExecutionMoment.IsBefore(this.AliveElements[elementIndex].PreviousExecutionMoment))
+                elementIndex--;
             
-            entity.ExecutionMoment += time;
-            
-            int newEntityIndex = entityIndex;
-            while (newEntityIndex < this.upcomingElements.Count - 1 && this.upcomingElements[newEntityIndex + 1].ExecutionMoment < entity.ExecutionMoment)
-                newEntityIndex++;
-            
-            if (newEntityIndex == entityIndex)
-                return;
-            
-            this.upcomingElements.Insert(newEntityIndex, entity);
-            this.upcomingElements.RemoveAt(entityIndex);
+            this.AliveElements.Insert(elementIndex, element);
+        }
+
+        private void ApplyElementsReplay()
+        {
+            while (this.AliveElements.Count > 0 && this.AliveElements[0].NextExecutionMoment.IsBeforeOrEqual(this.CurrentTime)
+                   || this.ToBeBornElements.Count > 0 && this.ToBeBornElements[0].BirthMoment.IsBeforeOrEqual(this.CurrentTime))
+            {
+                bool applyAlive = this.AliveElements.Count > 0 && (this.ToBeBornElements.Count == 0 || this.AliveElements[0].NextExecutionMoment.IsBefore(this.ToBeBornElements[0].BirthMoment));
+                
+                if (applyAlive)
+                {
+                    ASimulationElement element = this.AliveElements[0];
+                    
+                    if (element.NextExecutionMoment == element.DeathMoment)
+                    {
+                        this.DeadElements.Insert(this.DeadElements.Count - 1, element);
+                        this.AliveElements.RemoveAt(0);
+                    }
+                    else
+                    {
+                        SimulationMoment previousMoment = new(element.NextExecutionMoment);
+                        element.Redo();
+                        element.PreviousExecutionMoment = previousMoment;
+                    }
+                }
+                else
+                {
+                    ASimulationElement element = this.ToBeBornElements[0];
+                    this.ToBeBornElements.RemoveAt(0);
+
+                    this.RespawnElement(element);
+                }
+            }
         }
         
-        private int FindEntityIndex(SimulationEntity entity)
+        private void RespawnElement(ASimulationElement element)
         {
-            for (int i = 0; i < this.upcomingElements.Count; i++)
-            {
-                if (this.upcomingElements[i] == entity)
-                    return i;
-            }
+            int elementIndex = 0;
+
+            while (elementIndex < this.AliveElements.Count && element.NextExecutionMoment.IsAfter(this.AliveElements[elementIndex].NextExecutionMoment))
+                elementIndex++;
             
-            return -1;
+            this.AliveElements.Insert(elementIndex, element);
         }
+        #endregion APPLY ELEMENTS
     }
 }

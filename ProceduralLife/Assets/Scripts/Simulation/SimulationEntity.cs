@@ -7,36 +7,68 @@ using Random = UnityEngine.Random;
 
 namespace ProceduralLife.Simulation
 {
+    using UnityEngine.Assertions;
+
     public class SimulationEntity : ASimulationElement
     {
-        public SimulationEntity(ulong insertMoment, Vector2Int position)
-            : base(insertMoment)
-        {
-            this.Position = position;
-        }
-        
-        public Vector2Int Position { get; private set; }
+        public Vector2Int Position { get; private set; } = Vector2Int.zero;
         
         public event Action<Vector2Int, ulong, ulong, bool> MoveStartEvent = delegate { };
         public event Action<Vector2Int> MoveEndEvent = delegate { };
         
-        public override ASimulationCommand Apply(SimulationContext context)
+        private readonly List<TestStateData> stateData = new();
+        
+        private int currentIndex = -1;
+        
+        public override void Do()
         {
-            ASimulationCommand command = this.isMoving ? this.ApplyMoveEnd(context) : this.ApplyMoveStart(context);
+            Assert.IsTrue(this.currentIndex < this.stateData.Count);
+
+            if (this.currentIndex < this.stateData.Count - 1)
+                this.stateData.RemoveRange(this.currentIndex + 1, this.stateData.Count - 1 - this.currentIndex);
+            
+            if (this.isMoving)
+                this.ApplyMoveEnd();
+            else
+                this.ApplyMoveStart();
+            
             this.isMoving = !this.isMoving;
             
-            return command;
+            this.currentIndex++;
         }
         
-        #region STATE
+        public override void Undo()
+        {
+            if (this.isMoving)
+            {
+                this.targetTile = this.Position;
+                this.MoveEndEvent.Invoke(this.Position);
+            }
+            else
+            {
+                this.Position = this.stateData[this.currentIndex].Position;
+                this.MoveStartEvent.Invoke(this.Position, this.stateData[this.currentIndex].ExecutionMoment.Time, 2000, false);
+            }
+
+            if (this.currentIndex > 0)
+                this.PreviousExecutionMoment = this.stateData[this.currentIndex - 1].ExecutionMoment;
+            this.isMoving = !this.isMoving;
+            this.currentIndex--;
+        }
+
+        public override void Redo()
+        {
+            this.NextExecutionMoment.Time += 10000;
+            //Assert.IsTrue(this.currentIndex < );
+            this.isMoving = !this.isMoving;
+            this.currentIndex++;
+        }
+        
         private bool isMoving = false;
         private Vector2Int targetTile;
         
-        private ASimulationCommand ApplyMoveStart(SimulationContext context)
+        private void ApplyMoveStart()
         {
-            this.ExecutionMoment += 2000;
-            context.SimulationTime.InsertUpcomingEntity(this);
-            
             Vector2Int[] offsets = HexagonHelper.GetTileOffsets(this.Position.y);
             
             List<Vector2Int> neighbours = new(HexagonHelper.DIRECTIONS_COUNT);
@@ -51,17 +83,19 @@ namespace ProceduralLife.Simulation
             int randomIndex = Random.Range(0, neighbours.Count);
             Vector2Int newPosition = neighbours[randomIndex];
             
-            return new MoveStartSimulationCommand(this, this, newPosition, 2000);
-        }
-        
-        private ASimulationCommand ApplyMoveEnd(SimulationContext context)
-        {
-            context.SimulationTime.InsertUpcomingEntity(this);
+            this.MoveStart(newPosition, this.NextExecutionMoment.Time, 2000, true);
             
-            return new MoveEndSimulationCommand(this, this, this.targetTile, 2000);
+            this.stateData.Add(new TestStateData(this.NextExecutionMoment, this.Position, this.targetTile));
+            
+            context.SimulationTime.DelayElement(this, 2000);
         }
         
-        #endregion STATE
+        private void ApplyMoveEnd()
+        {
+            this.stateData.Add(new TestStateData(this.NextExecutionMoment, this.Position, this.targetTile));
+            this.MoveEnd(this.targetTile);
+        }
+        
         
         public void MoveStart(Vector2Int newTarget, ulong startMoment, ulong duration, bool forward)
         {

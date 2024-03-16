@@ -1,14 +1,29 @@
-﻿namespace ProceduralLife.Simulation
+﻿using MHLib.CommandPattern;
+
+namespace ProceduralLife.Simulation
 {
-    public abstract class ASimulationElement
+    public abstract class ASimulationElement : ACommand
     {
-        protected ASimulationElement(ulong insertMoment)
+        public void InitBirth(SimulationMoment birthMoment)
         {
-            this.ExecutionMoment = insertMoment;
+            this.BirthMoment = birthMoment;
+            this.NextExecutionMoment = birthMoment;
+
+            this.DeathMoment = null;
+            this.PreviousExecutionMoment = null;
         }
         
-        public ulong ExecutionMoment;
+        public SimulationMoment BirthMoment;
+        public SimulationMoment DeathMoment;
+        
+        public SimulationMoment PreviousExecutionMoment;
+        public SimulationMoment NextExecutionMoment;
 
-        public abstract ASimulationCommand Apply(SimulationContext context);
+        protected static SimulationContext context;
+        
+        public static void SetupContext(SimulationContext newContext)
+        {
+            context = newContext;
+        }
     }
 }
