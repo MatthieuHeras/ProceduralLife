@@ -2,11 +2,8 @@
 {
     public abstract class AState
     {
-        /*public virtual ASimulationCommand Apply(SimulationContext context)
-        {
-            
-        }
-        
-        protected abstract ASimulationCommand GenerateCommand(SimulationContext context);*/
+        public abstract StateDoData Do();
+        public abstract void Undo(AStateData stateData);
+        public abstract void Redo(AStateData stateData);
     }
 }

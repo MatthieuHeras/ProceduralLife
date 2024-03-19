@@ -4,8 +4,8 @@
 
     public record TestStateData : AStateData
     {
-        public TestStateData(SimulationMoment executionMoment, SimulationMoment nextExecutionMoment, Vector2Int position, Vector2Int target)
-            : base(executionMoment, nextExecutionMoment)
+        public TestStateData(Vector2Int position, Vector2Int target)
+            : base()
         {
             this.Position = position;
             this.Target = target;
