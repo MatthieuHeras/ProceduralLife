@@ -239,12 +239,20 @@ namespace MHLib.Hexagon
             for (int i = 0, offsetsLength = offsets.Length; i < offsetsLength; i++)
             {
                 Vector2Int offsetPosition = tilePosition + offsets[i];
-
+                
                 if (condition(offsetPosition) && ++validNeighbours >= neighboursCount) // Here we check the neighbours count
                     return true;
             }
-
+            
             return false;
+        }
+        
+        public static void ApplyOnNeighbours(Vector2Int tilePosition, Action<Vector2Int> action)
+        {
+            Vector2Int[] offsets = GetTileOffsets(tilePosition.y);
+            
+            for (int i = 0, offsetsLength = offsets.Length; i < offsetsLength; i++)
+                action(tilePosition + offsets[i]);
         }
         #endregion NEIGHBOURS
         

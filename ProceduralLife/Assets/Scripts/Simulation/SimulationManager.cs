@@ -27,7 +27,7 @@ namespace ProceduralLife.Simulation
         [Button]
         public void AddSheep()
         {
-            SimulationEntity entity = new();
+            SimulationEntity entity = new(this.commandGenerator.MapData);
             SimulationEntityView firstEntityView = Instantiate(this.entityView);
             firstEntityView.Init(entity);
             

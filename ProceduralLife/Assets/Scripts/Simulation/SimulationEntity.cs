@@ -1,12 +1,22 @@
-﻿using System;
+﻿using ProceduralLife.Map;
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.Assertions;
+using Random = UnityEngine.Random;
 
 namespace ProceduralLife.Simulation
 {
     public class SimulationEntity : ASimulationElement
     {
+        public SimulationEntity(MapData mapData)
+        {
+            this.MapData = mapData;
+            this.currentState = new MoveState(this, this.MapData.Tiles.ElementAt(Random.Range(0, this.MapData.Tiles.Count)).Key);
+        }
+
+        public readonly MapData MapData;
         public Vector2Int Position { get; private set; } = Vector2Int.zero;
         
         public event Action<Vector2Int, ulong, ulong, bool> MoveStartEvent = delegate { };
@@ -59,6 +69,17 @@ namespace ProceduralLife.Simulation
             this.currentState = this.stateData[this.currentIndex].State;
             this.currentState.Redo(this.stateData[this.currentIndex]);
             this.NextExecutionMoment = this.stateData[this.currentIndex].NextExecutionMoment;
+        }
+        
+        public void MoveStart(Vector2Int newTarget, ulong startMoment, ulong duration, bool forward)
+        {
+            this.MoveStartEvent.Invoke(newTarget, startMoment, duration, forward);
+        }
+        
+        public void MoveEnd(Vector2Int newPosition)
+        {
+            this.Position = newPosition;
+            this.MoveEndEvent.Invoke(newPosition);
         }
         
         ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -145,19 +166,6 @@ namespace ProceduralLife.Simulation
         {
             this.stateData.Add(new TestStateData(this.NextExecutionMoment, this.NextExecutionMoment, this.Position, this.targetTile));
             this.MoveEnd(this.targetTile);
-        }
-        
-        
-        public void MoveStart(Vector2Int newTarget, ulong startMoment, ulong duration, bool forward)
-        {
-            this.targetTile = newTarget;
-            this.MoveStartEvent.Invoke(newTarget, startMoment, duration, forward);
-        }
-        
-        public void MoveEnd(Vector2Int newPosition)
-        {
-            this.Position = newPosition;
-            this.MoveEndEvent.Invoke(newPosition);
         }*/
     }
 }
