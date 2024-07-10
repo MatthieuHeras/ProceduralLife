@@ -1,0 +1,3 @@
+[submodule "ProceduralLife/Assets/Scripts/MHLib"]
+	path = ProceduralLife/Assets/Scripts/MHLib
+	url = https://github.com/MatthieuHeras/MHLib.git
