@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using ProceduralLife.Map;
+using UnityEngine;
 using UnityEngine.Assertions;
 
 namespace ProceduralLife.Simulation
@@ -13,6 +14,13 @@ namespace ProceduralLife.Simulation
             ASimulationElement.SetupContext(this.SimulationContext);
             
             this.iterateMethod = this.IterateForward;
+
+            SimulationManager.SimulationChanged += this.OnSimulationChanged;
+        }
+        
+        ~SimulationTime()
+        {
+            SimulationManager.SimulationChanged -= this.OnSimulationChanged;
         }
         
         public readonly SimulationContext SimulationContext;
@@ -30,25 +38,13 @@ namespace ProceduralLife.Simulation
         public static event Action<ulong, ulong> CurrentTimeChanged = delegate { };
         public static event Action<E_IterationMethodType> IterationMethodChanged = delegate { }; 
         
-        #region TIME WAY
-        public void ForwardStrict()
-        {
-            if (this.iterateMethod == this.IterateForward)
-                return;
-            
-            this.AliveElements.Sort((element1, element2) => element1.NextExecutionMoment.IsBefore(element2.NextExecutionMoment) ? -1 : 1);
-            IterationMethodChanged.Invoke(E_IterationMethodType.PLAY);
-            this.iterateMethod = this.IterateForward;
-        }
-        
-        public void ForwardReplay()
+        #region TIME DIRECTION
+        public void Forward()
         {
             if (this.iterateMethod == this.IterateForward || this.iterateMethod == this.IterateReplay)
                 return;
             
-            this.AliveElements.Sort((element1, element2) => element1.NextExecutionMoment.IsBefore(element2.NextExecutionMoment) ? -1 : 1);
-            IterationMethodChanged.Invoke(E_IterationMethodType.REPLAY);
-            this.iterateMethod = this.IterateReplay;
+            this.ChangeIterationMethod(this.PresentTime == this.CurrentTime ? E_IterationMethodType.PLAY : E_IterationMethodType.REPLAY);
         }
         
         public void Backward()
@@ -56,11 +52,44 @@ namespace ProceduralLife.Simulation
             if (this.iterateMethod == this.IterateBackward)
                 return;
             
-            this.AliveElements.Sort((element1, element2) => element1.PreviousExecutionMoment.IsBefore(element2.PreviousExecutionMoment) ? -1 : 1);
-            IterationMethodChanged.Invoke(E_IterationMethodType.BACKWARD);
-            this.iterateMethod = this.IterateBackward;
+            this.ChangeIterationMethod(E_IterationMethodType.BACKWARD);
         }
-        #endregion TIME WAY
+
+        private void OnSimulationChanged()
+        {
+            if (this.iterateMethod == this.IterateForward)
+                return;
+
+            if (this.iterateMethod != this.IterateReplay)
+                Debug.LogError("Trying to impact the simulation while it's not going forward.");
+            
+            this.ChangeIterationMethod(E_IterationMethodType.PLAY);
+        }
+
+        private void ChangeIterationMethod(E_IterationMethodType iterationMethodType)
+        {
+            // Sort alive elements depending on the time direction.
+            switch (iterationMethodType)
+            {
+                case E_IterationMethodType.PLAY:
+                case E_IterationMethodType.REPLAY:
+                    this.AliveElements.Sort((element1, element2) => element1.NextExecutionMoment.IsBefore(element2.NextExecutionMoment) ? -1 : 1);
+                    break;
+                case E_IterationMethodType.BACKWARD:
+                    this.AliveElements.Sort((element1, element2) => element1.PreviousExecutionMoment.IsBefore(element2.PreviousExecutionMoment) ? -1 : 1);
+                    break;
+            }
+            
+            this.iterateMethod = iterationMethodType switch
+            {
+                E_IterationMethodType.PLAY => this.IterateForward,
+                E_IterationMethodType.REPLAY => this.IterateReplay,
+                E_IterationMethodType.BACKWARD => this.IterateBackward
+            };
+            
+            IterationMethodChanged.Invoke(iterationMethodType);
+        }
+        #endregion TIME DIRECTION
 
         #region ELEMENTS LIFE
         

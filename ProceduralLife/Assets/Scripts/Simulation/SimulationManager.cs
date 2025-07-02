@@ -1,6 +1,7 @@
 ﻿using ProceduralLife.MapEditor;
 using ProceduralLife.Simulation.View;
 using Sirenix.OdinInspector;
+using System;
 using UnityEngine;
 
 namespace ProceduralLife.Simulation
@@ -23,6 +24,8 @@ namespace ProceduralLife.Simulation
         
         private SimulationTime simulationTime;
         
+        public static event Action SimulationChanged = delegate { };
+        
         public void ChangeTimeScale(float newTimeScale)
         {
             this.timeScale = newTimeScale;
@@ -41,7 +44,7 @@ namespace ProceduralLife.Simulation
         public void AddSheepButton()
         {
             this.AddSheep();
-            this.simulationTime.ForwardStrict();
+            SimulationChanged.Invoke();
         }
         
         [Button]
@@ -50,7 +53,7 @@ namespace ProceduralLife.Simulation
             for (int i = 0; i < 100; i++)
                 this.AddSheepButton();
             
-            this.simulationTime.ForwardStrict();
+            SimulationChanged.Invoke();
         }
         
         [Button]
@@ -64,7 +67,7 @@ namespace ProceduralLife.Simulation
         public void GoForward()
         {
             Debug.LogWarning("Forward");
-            this.simulationTime.ForwardReplay();
+            this.simulationTime.Forward();
         }
     
         private void Start()
