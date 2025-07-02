@@ -22,10 +22,11 @@ namespace ProceduralLife.Simulation
         
         public override StateDoData Do()
         {
+            bool wasMoving = this.isMoving;
             ulong duration = this.moveDuration;
             this.moveDuration = 50ul;
             
-            if (this.isMoving)
+            if (wasMoving)
             {
                 this.entity.MoveEnd(this.path[this.currentPathIndex]);
                 this.currentPathIndex++;
@@ -42,7 +43,7 @@ namespace ProceduralLife.Simulation
                                ? null
                                : this;
             
-            return new StateDoData(new MoveStateData(!this.isMoving, duration, this.moveDuration), this.moveDuration, nextState);
+            return new StateDoData(new MoveStateData(wasMoving, duration, this.moveDuration), this.moveDuration, nextState);
         }
         
         public override void Undo(AStateData stateData)
@@ -51,7 +52,6 @@ namespace ProceduralLife.Simulation
             Assert.IsTrue(this.currentPathIndex > 0);
             
             MoveStateData moveStateData = (MoveStateData)stateData;
-            Assert.IsTrue(this.isMoving != moveStateData.IsMoving);
 
             if (this.isMoving)
             {
