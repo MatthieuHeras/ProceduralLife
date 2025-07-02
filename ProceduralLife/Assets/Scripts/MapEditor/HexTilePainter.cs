@@ -21,10 +21,15 @@ namespace ProceduralLife.MapEditor
 
         private void ChangePaintAction(Action<Vector2Int> newPaintAction)
         {
-            this.paintAction = newPaintAction;
-
-            if (this.paintAction != null && this.tileHoverer.CurrentTilePosition.HasValue && MouseUtils.IsMousePositionValid(this.mainCamera))
+            if (newPaintAction == null)
+            {
+                this.paintAction = null;
+            }
+            else if (this.tileHoverer.CurrentTilePosition.HasValue && MouseUtils.IsMousePositionValid(this.mainCamera))
+            {
+                this.paintAction = newPaintAction;
                 this.paintAction(this.tileHoverer.CurrentTilePosition.Value);
+            }
         }
         
         private void AddTileAction(Vector2Int tilePosition)
