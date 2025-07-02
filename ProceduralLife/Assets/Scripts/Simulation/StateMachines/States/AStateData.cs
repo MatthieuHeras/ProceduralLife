@@ -10,11 +10,10 @@
             return this;
         }
         
-        public AStateData InitStates(AState state, AState nextState)
+        public AStateData InitState(AState state)
         {
             this.State = state;
-            this.NextState = nextState;
-
+            
             return this;
         }
         
@@ -22,6 +21,5 @@
         public SimulationMoment NextExecutionMoment { get; private set; }
         
         public AState State { get; private set; }
-        public AState NextState { get; private set; }
     }
 }

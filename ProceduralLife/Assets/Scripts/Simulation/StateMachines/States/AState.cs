@@ -6,7 +6,7 @@
         {
             this.entity = entity;
         }
-
+        
         protected readonly SimulationEntity entity;
         
         public abstract StateDoData Do();

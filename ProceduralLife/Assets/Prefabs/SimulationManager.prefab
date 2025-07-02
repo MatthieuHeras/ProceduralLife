@@ -47,3 +47,4 @@ MonoBehaviour:
   commandGenerator: {fileID: 0}
   entityView: {fileID: 1136233462868858159, guid: c1408628e8b97784bb90c1202222cd8d, type: 3}
   timeScale: 1
+  testEntity: {fileID: 11400000, guid: 4f14d6fb41815d840b3197fa7a877ecb, type: 2}

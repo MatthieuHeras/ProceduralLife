@@ -1,21 +1,21 @@
 ﻿using ProceduralLife.Map;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 using UnityEngine.Assertions;
-using Random = UnityEngine.Random;
 
 namespace ProceduralLife.Simulation
 {
     public class SimulationEntity : ASimulationElement
     {
-        public SimulationEntity(MapData mapData)
+        public SimulationEntity(SimulationEntityDefinition definition, MapData mapData)
         {
+            this.Definition = definition;
             this.MapData = mapData;
-            this.currentState = new MoveState(this, this.MapData.Tiles.ElementAt(Random.Range(0, this.MapData.Tiles.Count)).Key);
+            this.state = new StateMachine(definition.StateMachineDefinition, this);
         }
-
+        
+        public readonly SimulationEntityDefinition Definition;
         public readonly MapData MapData;
         public Vector2Int Position { get; private set; } = Vector2Int.zero;
         
@@ -25,7 +25,7 @@ namespace ProceduralLife.Simulation
         private readonly List<AStateData> stateData = new();
         
         private int currentIndex = -1;
-        private AState currentState;
+        private AState state;
         
         public override void Do()
         {
@@ -35,30 +35,30 @@ namespace ProceduralLife.Simulation
             if (this.currentIndex < this.stateData.Count - 1)
                 this.stateData.RemoveRange(this.currentIndex + 1, this.stateData.Count - 1 - this.currentIndex);
             
-            StateDoData stateDoData = this.currentState.Do();
+            StateDoData stateDoData = this.state.Do();
             
             SimulationMoment executionMoment = this.NextExecutionMoment;
             context.SimulationTime.DelayElement(this, stateDoData.Delay);
             
-            stateDoData.StateData.InitStates(this.currentState, stateDoData.NextState)
+            stateDoData.StateData.InitState(this.state)
                                  .InitExecutionMoments(executionMoment, this.NextExecutionMoment);
             
             this.stateData.Add(stateDoData.StateData);
             this.currentIndex++;
             
-            this.currentState = stateDoData.NextState;
+            this.state = stateDoData.NextState;
         }
         
         public override void Undo()
         {
-            this.currentState.Undo(this.stateData[this.currentIndex]);
+            AStateData currentStateData = this.stateData[this.currentIndex];
+            this.state = currentStateData.State;
+            
+            this.state.Undo(currentStateData);
             this.currentIndex--;
 
             if (this.currentIndex >= 0)
-            {
                 this.PreviousExecutionMoment = this.stateData[this.currentIndex].ExecutionMoment;
-                this.currentState = this.stateData[this.currentIndex].State;
-            }
         }
         
         public override void Redo()
@@ -66,8 +66,8 @@ namespace ProceduralLife.Simulation
             Assert.IsTrue(this.currentIndex < this.stateData.Count - 1);
             this.currentIndex++;
             
-            this.currentState = this.stateData[this.currentIndex].State;
-            this.currentState.Redo(this.stateData[this.currentIndex]);
+            this.state = this.stateData[this.currentIndex].State;
+            this.state.Redo(this.stateData[this.currentIndex]);
             this.NextExecutionMoment = this.stateData[this.currentIndex].NextExecutionMoment;
         }
         

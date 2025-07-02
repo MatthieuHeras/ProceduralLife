@@ -16,6 +16,10 @@ namespace ProceduralLife.Simulation
         
         [SerializeField]
         private float timeScale = 1f;
+
+        // [TODO] Proper spawn/place
+        [SerializeField]
+        private SimulationEntityDefinition testEntity;
         
         private SimulationTime simulationTime;
         
@@ -23,11 +27,10 @@ namespace ProceduralLife.Simulation
         {
             this.timeScale = newTimeScale;
         }
-        
-        [Button]
-        public void AddSheep()
+
+        private void AddSheep()
         {
-            SimulationEntity entity = new(this.commandGenerator.MapData);
+            SimulationEntity entity = new(this.testEntity, this.commandGenerator.MapData);
             SimulationEntityView firstEntityView = Instantiate(this.entityView);
             firstEntityView.Init(entity);
             
@@ -35,10 +38,19 @@ namespace ProceduralLife.Simulation
         }
         
         [Button]
-        public void Add100Sheep()
+        public void AddSheepButton()
+        {
+            this.AddSheep();
+            this.simulationTime.ForwardStrict();
+        }
+        
+        [Button]
+        public void Add100SheepButton()
         {
             for (int i = 0; i < 100; i++)
-                this.AddSheep();
+                this.AddSheepButton();
+            
+            this.simulationTime.ForwardStrict();
         }
         
         [Button]
@@ -52,7 +64,7 @@ namespace ProceduralLife.Simulation
         public void GoForward()
         {
             Debug.LogWarning("Forward");
-            this.simulationTime.Forward();
+            this.simulationTime.ForwardReplay();
         }
     
         private void Start()

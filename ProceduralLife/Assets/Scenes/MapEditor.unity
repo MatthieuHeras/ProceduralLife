@@ -605,7 +605,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1255795124}
         m_TargetAssemblyTypeName: ProceduralLife.Simulation.SimulationManager, ProceduralLife
-        m_MethodName: Add100Sheep
+        m_MethodName: Add100SheepButton
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -1823,7 +1823,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1255795124}
         m_TargetAssemblyTypeName: ProceduralLife.Simulation.SimulationManager, ProceduralLife
-        m_MethodName: AddSheep
+        m_MethodName: AddSheepButton
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

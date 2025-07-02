@@ -1,7 +1,6 @@
 ﻿using MHLib;
 using MHLib.Hexagon;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 using UnityEngine.Assertions;
 
@@ -17,11 +16,15 @@ namespace ProceduralLife.Simulation
         
         private readonly List<Vector2Int> path;
         private int currentPathIndex = 1;
-
-        public bool isMoving = false;
+        
+        private bool isMoving = false;
+        private ulong moveDuration = 0ul;
         
         public override StateDoData Do()
         {
+            ulong duration = this.moveDuration;
+            this.moveDuration = 50ul;
+            
             if (this.isMoving)
             {
                 this.entity.MoveEnd(this.path[this.currentPathIndex]);
@@ -30,15 +33,16 @@ namespace ProceduralLife.Simulation
             }
             else if (this.currentPathIndex < this.path.Count) // Safety for empty path (one tile, being self)
             {
-                this.entity.MoveStart(this.path[this.currentPathIndex], this.entity.NextExecutionMoment.Time, 1000, true);
+                this.moveDuration = (ulong)Random.Range(300, 1000);
+                this.entity.MoveStart(this.path[this.currentPathIndex], this.entity.NextExecutionMoment.Time, this.moveDuration, true);
                 this.isMoving = true;
             }
             
             AState nextState = !this.isMoving && this.currentPathIndex == this.path.Count
-                               ? new MoveState(this.entity, this.entity.MapData.Tiles.ElementAt(Random.Range(0, this.entity.MapData.Tiles.Count)).Key)
+                               ? null
                                : this;
             
-            return new StateDoData(new MoveStateData(!this.isMoving), this.isMoving ? 1000ul : 100ul, nextState);
+            return new StateDoData(new MoveStateData(!this.isMoving, duration, this.moveDuration), this.moveDuration, nextState);
         }
         
         public override void Undo(AStateData stateData)
@@ -46,6 +50,9 @@ namespace ProceduralLife.Simulation
             Assert.IsTrue(stateData is MoveStateData);
             Assert.IsTrue(this.currentPathIndex > 0);
             
+            MoveStateData moveStateData = (MoveStateData)stateData;
+            Assert.IsTrue(this.isMoving != moveStateData.IsMoving);
+
             if (this.isMoving)
             {
                 this.entity.MoveEnd(this.path[this.currentPathIndex - 1]);
@@ -57,7 +64,7 @@ namespace ProceduralLife.Simulation
                     return;
                 
                 this.currentPathIndex--;
-                this.entity.MoveStart(this.path[this.currentPathIndex - 1], this.entity.PreviousExecutionMoment.Time, 1000ul, false);
+                this.entity.MoveStart(this.path[this.currentPathIndex - 1], this.entity.PreviousExecutionMoment.Time, moveStateData.PreviousDuration, false);
             }
             
             this.isMoving = !this.isMoving;
@@ -66,6 +73,9 @@ namespace ProceduralLife.Simulation
         public override void Redo(AStateData stateData)
         {
             Assert.IsTrue(stateData is MoveStateData);
+            MoveStateData moveStateData = (MoveStateData)stateData;
+            
+            Assert.IsTrue(this.isMoving == moveStateData.IsMoving);
             
             if (this.isMoving)
             {
@@ -75,7 +85,7 @@ namespace ProceduralLife.Simulation
             }
             else if (this.currentPathIndex < this.path.Count) // Safety for empty path (one tile, being self)
             {
-                this.entity.MoveStart(this.path[this.currentPathIndex], this.entity.NextExecutionMoment.Time, 1000, true);
+                this.entity.MoveStart(this.path[this.currentPathIndex], this.entity.NextExecutionMoment.Time, moveStateData.Duration, true);
                 this.isMoving = true;
             }
         }

@@ -31,7 +31,17 @@ namespace ProceduralLife.Simulation
         public static event Action<E_IterationMethodType> IterationMethodChanged = delegate { }; 
         
         #region TIME WAY
-        public void Forward()
+        public void ForwardStrict()
+        {
+            if (this.iterateMethod == this.IterateForward)
+                return;
+            
+            this.AliveElements.Sort((element1, element2) => element1.NextExecutionMoment.IsBefore(element2.NextExecutionMoment) ? -1 : 1);
+            IterationMethodChanged.Invoke(E_IterationMethodType.PLAY);
+            this.iterateMethod = this.IterateForward;
+        }
+        
+        public void ForwardReplay()
         {
             if (this.iterateMethod == this.IterateForward || this.iterateMethod == this.IterateReplay)
                 return;
