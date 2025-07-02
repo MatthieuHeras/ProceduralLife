@@ -1,4 +1,5 @@
 ﻿using ProceduralLife.Map;
+using ProceduralLife.Simulation;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
@@ -31,10 +32,20 @@ namespace ProceduralLife.MapEditor
             if (this.mapEditorData.PaintedTileDefinition != newPaintedTile)
                 this.GenerateCommand(new ChangePaintedTileCommand(this.MapData, this.mapEditorData, newPaintedTile));
         }
-        
+
+        private void Awake()
+        {
+            SimulationContext.InitMapData(this.MapData);
+        }
+
         private void OnEnable()
         {
             TilePicker.TilePickedEvent += this.OnTilePicked;
+        }
+
+        private void OnDisable()
+        {
+            TilePicker.TilePickedEvent -= this.OnTilePicked;
         }
 
         private void OnTilePicked(TileDefinition newTileDefinition)

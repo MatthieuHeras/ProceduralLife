@@ -44,7 +44,7 @@ namespace ProceduralLife.Simulation
         private AState GetNewState()
         {
             // [TODO] Implement get new state from definition
-            return new MoveState(this.entity, this.entity.MapData.Tiles.ElementAt(UnityEngine.Random.Range(0, this.entity.MapData.Tiles.Count)).Key);
+            return new MoveState(this.entity, SimulationContext.MapData.Tiles.ElementAt(UnityEngine.Random.Range(0, SimulationContext.MapData.Tiles.Count)).Key);
         }
     }
 }

@@ -1,5 +1,4 @@
-﻿using ProceduralLife.MapEditor;
-using ProceduralLife.Simulation.View;
+﻿using ProceduralLife.Simulation.View;
 using Sirenix.OdinInspector;
 using System;
 using UnityEngine;
@@ -8,10 +7,6 @@ namespace ProceduralLife.Simulation
 {
     public class SimulationManager : MonoBehaviour
     {
-        // [TODO] Tmp way to access MapData, will need proper way later on.
-        [SerializeField, Required]
-        private MapEditorCommandGenerator commandGenerator;
-        
         [SerializeField, Required]
         private SimulationEntityView entityView;
         
@@ -33,7 +28,7 @@ namespace ProceduralLife.Simulation
 
         private void AddSheep()
         {
-            SimulationEntity entity = new(this.testEntity, this.commandGenerator.MapData);
+            SimulationEntity entity = new(this.testEntity);
             SimulationEntityView firstEntityView = Instantiate(this.entityView);
             firstEntityView.Init(entity);
             
@@ -72,7 +67,7 @@ namespace ProceduralLife.Simulation
     
         private void Start()
         {
-            this.simulationTime = new SimulationTime(this.commandGenerator.MapData);
+            this.simulationTime = new SimulationTime();
         }
         
         private void Update()

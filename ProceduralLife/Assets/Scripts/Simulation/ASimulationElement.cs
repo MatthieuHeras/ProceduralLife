@@ -18,12 +18,5 @@ namespace ProceduralLife.Simulation
         
         public SimulationMoment PreviousExecutionMoment;
         public SimulationMoment NextExecutionMoment;
-
-        protected static SimulationContext context;
-        
-        public static void SetupContext(SimulationContext newContext)
-        {
-            context = newContext;
-        }
     }
 }

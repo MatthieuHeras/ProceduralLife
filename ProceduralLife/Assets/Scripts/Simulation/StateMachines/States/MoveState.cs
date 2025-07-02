@@ -11,7 +11,7 @@ namespace ProceduralLife.Simulation
         public MoveState(SimulationEntity entity, Vector2Int targetPosition)
             : base(entity)
         {
-            this.path = AStar.GetPath(this.entity.Position, targetPosition, this.GetDistance, this.GetDistance, this.entity.MapData.GetTileNeighbours);
+            this.path = AStar.GetPath(this.entity.Position, targetPosition, this.GetDistance, this.GetDistance, SimulationContext.MapData.GetTileNeighbours);
         }
         
         private readonly List<Vector2Int> path;

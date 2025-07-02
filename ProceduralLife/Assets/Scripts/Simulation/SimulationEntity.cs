@@ -8,15 +8,13 @@ namespace ProceduralLife.Simulation
 {
     public class SimulationEntity : ASimulationElement
     {
-        public SimulationEntity(SimulationEntityDefinition definition, MapData mapData)
+        public SimulationEntity(SimulationEntityDefinition definition)
         {
             this.Definition = definition;
-            this.MapData = mapData;
             this.state = new StateMachine(definition.StateMachineDefinition, this);
         }
         
         public readonly SimulationEntityDefinition Definition;
-        public readonly MapData MapData;
         public Vector2Int Position { get; private set; } = Vector2Int.zero;
         
         public event Action<Vector2Int, ulong, ulong, bool> MoveStartEvent = delegate { };
@@ -38,7 +36,7 @@ namespace ProceduralLife.Simulation
             StateDoData stateDoData = this.state.Do();
             
             SimulationMoment executionMoment = this.NextExecutionMoment;
-            context.SimulationTime.DelayElement(this, stateDoData.Delay);
+            SimulationContext.SimulationTime.DelayElement(this, stateDoData.Delay);
             
             stateDoData.StateData.InitState(this.state)
                                  .InitExecutionMoments(executionMoment, this.NextExecutionMoment);
