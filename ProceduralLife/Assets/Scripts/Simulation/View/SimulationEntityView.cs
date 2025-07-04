@@ -1,10 +1,14 @@
 ﻿using MHLib.Hexagon;
+using Sirenix.OdinInspector;
 using UnityEngine;
 
 namespace ProceduralLife.Simulation.View
 {
     public class SimulationEntityView : MonoBehaviour
     {
+        [SerializeField, Required]
+        private GameObject viewParent = null;
+        
         private bool isMoving = false;
         private ulong moveStartMoment;
         private ulong moveEndMoment;
@@ -12,6 +16,7 @@ namespace ProceduralLife.Simulation.View
         private Vector3 moveEndPosition = Vector3.zero;
         
         private SimulationEntity entity;
+        private bool hooked = false;
         
         public void Init(SimulationEntity newEntity)
         {
@@ -56,16 +61,26 @@ namespace ProceduralLife.Simulation.View
         
         private void HookToEntity()
         {
+            if (this.hooked)
+                return;
+            
             this.entity.MoveStartEvent += this.OnMoveStart;
             this.entity.MoveEndEvent += this.OnMoveEnd;
             SimulationTime.CurrentTimeChanged += this.UpdateTime;
+
+            this.hooked = true;
         }
         
         private void UnhookToEntity()
         {
+            if (!this.hooked)
+                return;
+            
             this.entity.MoveStartEvent -= this.OnMoveStart;
             this.entity.MoveEndEvent -= this.OnMoveEnd;
             SimulationTime.CurrentTimeChanged -= this.UpdateTime;
+
+            this.hooked = false;
         }
         
         private void OnEnable()

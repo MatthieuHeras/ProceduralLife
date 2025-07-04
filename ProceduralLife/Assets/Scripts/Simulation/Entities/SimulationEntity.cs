@@ -1,5 +1,4 @@
-﻿using ProceduralLife.Map;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Assertions;
@@ -11,7 +10,7 @@ namespace ProceduralLife.Simulation
         public SimulationEntity(SimulationEntityDefinition definition)
         {
             this.Definition = definition;
-            this.state = new StateMachine(definition.StateMachineDefinition, this);
+            this.state = new SimulationEntityBrain(definition.BrainDefinition, this);
         }
         
         public readonly SimulationEntityDefinition Definition;

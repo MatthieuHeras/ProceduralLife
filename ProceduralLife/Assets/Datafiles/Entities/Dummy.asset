@@ -12,4 +12,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 51faee66d46649df8a259bd47a654ad1, type: 3}
   m_Name: Dummy
   m_EditorClassIdentifier: 
-  StateMachineDefinition: {fileID: 11400000, guid: 950121492dbe5134e92106806bd63d7e, type: 2}
+  BrainDefinition: {fileID: 11400000, guid: 2e7fa6cd5fd111d48ae42f821f7e1a41, type: 2}

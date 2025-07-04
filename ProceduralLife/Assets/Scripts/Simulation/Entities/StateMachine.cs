@@ -1,26 +1,32 @@
-﻿using System.Linq;
-using UnityEngine.Assertions;
+﻿using UnityEngine.Assertions;
 
 namespace ProceduralLife.Simulation
 {
     public class StateMachine : AState
     {
-        public StateMachine(StateMachineDefinition definition, SimulationEntity entity) : base(entity)
+        public StateMachine(StateMachineDefinition definition, SimulationEntity entity, bool canEnd) : base(entity)
         {
+            Assert.IsNotNull(definition, $"Missing definition in entity {entity.Definition.name}");
             this.Definition = definition;
-            this.state = this.GetNewState();
+            this.canEnd = canEnd;
         }
 
         public readonly StateMachineDefinition Definition;
-        private AState state;
+        protected AState state = null;
+        private readonly bool canEnd;
         
         public override StateDoData Do()
         {
+            this.state = this.GetNewState();
             StateDoData doData = this.state.Do();
             doData.StateData.InitState(this.state);
             
-            this.state = doData.NextState ?? this.GetNewState();
-            return new StateDoData(new StateMachineData(doData.StateData), doData.Delay, this.state != null ? this : null);
+            this.state = doData.NextState;
+            
+            bool shouldStop = this.canEnd && this.state == null;
+            AState nextState = shouldStop ? null : this;
+            
+            return new StateDoData(new StateMachineData(doData.StateData), doData.Delay, nextState);
         }
         
         public override void Undo(AStateData stateData)
@@ -40,11 +46,7 @@ namespace ProceduralLife.Simulation
             this.state = stateMachineData.ChildStateData.State;
             this.state.Redo(stateMachineData.ChildStateData);
         }
-
-        private AState GetNewState()
-        {
-            // [TODO] Implement get new state from definition
-            return new MoveState(this.entity, SimulationContext.MapData.Tiles.ElementAt(UnityEngine.Random.Range(0, SimulationContext.MapData.Tiles.Count)).Key);
-        }
+        
+        protected virtual AState GetNewState() => this.state;
     }
 }

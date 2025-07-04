@@ -277,24 +277,16 @@ namespace ProceduralLife.Simulation
                 {
                     ASimulationElement element = this.aliveElements[0];
                     
-                    if (element.NextExecutionMoment == element.DeathMoment)
-                    {
-                        this.deadElements.Insert(this.deadElements.Count - 1, element);
-                        this.aliveElements.RemoveAt(0);
-                    }
-                    else
-                    {
-                        SimulationMoment previousMoment = new(element.NextExecutionMoment);
-                        element.Redo();
-                        element.PreviousExecutionMoment = previousMoment;
+                    SimulationMoment previousMoment = new(element.NextExecutionMoment);
+                    element.Redo();
+                    element.PreviousExecutionMoment = previousMoment;
 
-                        int elementIndex = 0;
-                        while (elementIndex < this.aliveElements.Count - 1 && this.aliveElements[elementIndex + 1].NextExecutionMoment.IsBefore(element.NextExecutionMoment))
-                            elementIndex++;
-                        
-                        this.aliveElements.RemoveAt(0);
-                        this.aliveElements.Insert(elementIndex, element);
-                    }
+                    int elementIndex = 0;
+                    while (elementIndex < this.aliveElements.Count - 1 && this.aliveElements[elementIndex + 1].NextExecutionMoment.IsBefore(element.NextExecutionMoment))
+                        elementIndex++;
+                    
+                    this.aliveElements.RemoveAt(0);
+                    this.aliveElements.Insert(elementIndex, element);
                 }
                 else
                 {

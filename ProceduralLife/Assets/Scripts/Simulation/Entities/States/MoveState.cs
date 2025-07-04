@@ -1,6 +1,4 @@
-﻿using MHLib;
-using MHLib.Hexagon;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Assertions;
 
@@ -8,10 +6,10 @@ namespace ProceduralLife.Simulation
 {
     public class MoveState : AState
     {
-        public MoveState(SimulationEntity entity, Vector2Int targetPosition)
+        public MoveState(SimulationEntity entity, List<Vector2Int> path)
             : base(entity)
         {
-            this.path = AStar.GetPath(this.entity.Position, targetPosition, this.GetDistance, this.GetDistance, SimulationContext.MapData.GetTileNeighbours);
+            this.path = path;
         }
         
         private readonly List<Vector2Int> path;
@@ -89,7 +87,5 @@ namespace ProceduralLife.Simulation
                 this.isMoving = true;
             }
         }
-        
-        private float GetDistance(Vector2Int origin, Vector2Int target) => HexagonHelper.Distance(origin, target);
     }
 }

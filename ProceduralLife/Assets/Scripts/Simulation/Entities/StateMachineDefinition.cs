@@ -2,7 +2,7 @@
 
 namespace ProceduralLife.Simulation
 {
-    [CreateAssetMenu(fileName = "NewStateMachine", menuName = "PL/Entity/StateMachine")]
+    //[CreateAssetMenu(fileName = "NewStateMachine", menuName = "PL/Entity/StateMachine")]
     public class StateMachineDefinition : ScriptableObject
     {
         

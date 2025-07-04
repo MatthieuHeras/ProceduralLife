@@ -6,6 +6,6 @@ namespace ProceduralLife.Simulation
     public class SimulationEntityDefinition : ScriptableObject
     {
         [field: SerializeField]
-        public StateMachineDefinition StateMachineDefinition;
+        public SimulationEntityBrainDefinition BrainDefinition;
     }
 }
