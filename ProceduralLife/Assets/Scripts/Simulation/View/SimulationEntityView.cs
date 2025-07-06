@@ -58,6 +58,16 @@ namespace ProceduralLife.Simulation.View
             Vector3 worldPosition = HexagonHelper.TileToWorld(newPosition, Constants.TILE_SIZE);
             this.transform.position = worldPosition;
         }
+
+        private void OnBirth(bool timeIsForward)
+        {
+            this.viewParent.SetActive(timeIsForward);
+        }
+        
+        private void OnDeath(bool timeIsForward)
+        {
+            this.viewParent.SetActive(!timeIsForward);
+        }
         
         private void HookToEntity()
         {
@@ -66,6 +76,9 @@ namespace ProceduralLife.Simulation.View
             
             this.entity.MoveStartEvent += this.OnMoveStart;
             this.entity.MoveEndEvent += this.OnMoveEnd;
+            this.entity.BirthEvent += this.OnBirth;
+            this.entity.DeathEvent += this.OnDeath;
+            
             SimulationTime.CurrentTimeChanged += this.UpdateTime;
 
             this.hooked = true;
@@ -79,16 +92,23 @@ namespace ProceduralLife.Simulation.View
             this.entity.MoveStartEvent -= this.OnMoveStart;
             this.entity.MoveEndEvent -= this.OnMoveEnd;
             SimulationTime.CurrentTimeChanged -= this.UpdateTime;
+            this.entity.BirthEvent -= this.OnBirth;
+            this.entity.DeathEvent -= this.OnDeath;
 
             this.hooked = false;
         }
         
+        #region UNITY METHODS
+        private void Awake()
+        {
+            this.viewParent.SetActive(false);
+        }
+
         private void OnEnable()
         {
             if (this.entity == null)
                 return;
             
-            this.UnhookToEntity();
             this.HookToEntity();
         }
         
@@ -96,5 +116,7 @@ namespace ProceduralLife.Simulation.View
         {
             this.UnhookToEntity();
         }
+        #endregion UNITY METHODS
+
     }
 }

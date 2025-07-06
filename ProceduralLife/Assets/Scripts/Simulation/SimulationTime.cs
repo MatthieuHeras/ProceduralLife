@@ -146,9 +146,10 @@ namespace ProceduralLife.Simulation
             this.aliveElements.Insert(elementIndex, element);
         }
         
-        public void KillElement(ASimulationElement element)
+        public void KillElement(ASimulationElement element, SimulationMoment deathMoment)
         {
             Assert.IsTrue(this.aliveElements.Contains(element));
+            element.InitDeath(deathMoment);
             this.aliveElements.Remove(element);
             this.deadElements.Add(element);
         }
