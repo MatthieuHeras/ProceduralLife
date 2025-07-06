@@ -32,7 +32,7 @@ namespace ProceduralLife.Simulation
             SimulationEntityView firstEntityView = Instantiate(this.entityView);
             firstEntityView.Init(entity);
             
-            this.simulationTime.InsertElement(entity);
+            this.simulationTime.SpawnElement(entity);
         }
         
         [Button]

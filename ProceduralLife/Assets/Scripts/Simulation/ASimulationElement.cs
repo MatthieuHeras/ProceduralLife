@@ -8,26 +8,25 @@ namespace ProceduralLife.Simulation
         
         public event TimeEvent BirthEvent = delegate { };
         public event TimeEvent DeathEvent = delegate { };
-        
-        public void InitBirth(SimulationMoment birthMoment)
+
+        public void InitBirthMoment(SimulationMoment birthMoment)
         {
-            this.BirthMoment = birthMoment;
             this.NextExecutionMoment = birthMoment;
-
-            this.DeathMoment = null;
             this.PreviousExecutionMoment = null;
-
-            this.BirthEvent.Invoke(true);
         }
         
-        public void InitDeath(SimulationMoment deathMoment)
+        public void ReachBirthMoment(bool timeIsForward)
         {
-            this.DeathMoment = deathMoment;
-            this.DeathEvent.Invoke(true);
+            this.BirthEvent.Invoke(timeIsForward);
         }
         
-        public SimulationMoment BirthMoment;
-        public SimulationMoment DeathMoment;
+        public void ReachDeathMoment(bool timeIsForward)
+        {
+            this.DeathEvent.Invoke(timeIsForward);
+        }
+        
+        public void UnBirth() => this.BirthEvent.Invoke(false);
+        public void UnKill() => this.DeathEvent.Invoke(false);
         
         public SimulationMoment PreviousExecutionMoment;
         public SimulationMoment NextExecutionMoment;
