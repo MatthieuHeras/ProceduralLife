@@ -143,7 +143,7 @@ namespace ProceduralLife.Simulation
             
             element.ReachBirthMoment(true);
         }
-
+        
         /// <summary> Undo the spawn a new element in the simulation while it plays BACKWARD. </summary>
         public void DespawnElement(ASimulationElement element)
         {
@@ -155,7 +155,7 @@ namespace ProceduralLife.Simulation
         public void RespawnElement(ASimulationElement element)
         {
             int elementIndex = 0;
-
+            
             while (elementIndex < this.aliveElements.Count && element.NextExecutionMoment.IsAfter(this.aliveElements[elementIndex].NextExecutionMoment))
                 elementIndex++;
             
@@ -174,11 +174,12 @@ namespace ProceduralLife.Simulation
         public void ResurrectElement(ASimulationElement element)
         {
             int elementIndex = this.aliveElements.Count;
-
+            
             while (elementIndex > 0 && element.PreviousExecutionMoment.IsBefore(this.aliveElements[elementIndex].PreviousExecutionMoment))
                 elementIndex--;
             
             this.aliveElements.Insert(elementIndex, element);
+            element.ReachDeathMoment(false);
         }
         
         /// <summary> Redo the removal of an element from the simulation while it REPLAYS. </summary>
@@ -238,7 +239,7 @@ namespace ProceduralLife.Simulation
             this.IterateForward(forwardDeltaTime);
         }
         #endregion ITERATE
-
+        
         #region APPLY ELEMENTS
         private void ApplyElementsForward()
         {

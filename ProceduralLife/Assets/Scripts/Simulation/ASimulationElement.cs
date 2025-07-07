@@ -25,9 +25,6 @@ namespace ProceduralLife.Simulation
             this.DeathEvent.Invoke(timeIsForward);
         }
         
-        public void UnBirth() => this.BirthEvent.Invoke(false);
-        public void UnKill() => this.DeathEvent.Invoke(false);
-        
         public SimulationMoment PreviousExecutionMoment;
         public SimulationMoment NextExecutionMoment;
     }
