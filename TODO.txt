@@ -1,0 +1,10 @@
+- Condition system (Configurable Scriptable Object)
+- Stat system:
+  - Speed
+  - Hunger
+  - Thirst
+  - Food Value (tag system + value)
+  - ...
+- Implement trees as entities
+- Day/Night cycle
+- Weather
