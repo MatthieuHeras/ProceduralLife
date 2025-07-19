@@ -32,7 +32,7 @@ namespace ProceduralLife.Simulation
             }
             else if (this.currentPathIndex < this.path.Count) // Safety for empty path (one tile, being self)
             {
-                this.moveDuration = (ulong)Random.Range(300, 1000);
+                this.moveDuration = (ulong)(1000f / this.entity.Speed);
                 this.entity.MoveStart(this.path[this.currentPathIndex], this.entity.NextExecutionMoment.Time, this.moveDuration, true);
                 this.isMoving = true;
             }

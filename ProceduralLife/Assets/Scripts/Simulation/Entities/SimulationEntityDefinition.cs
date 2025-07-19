@@ -12,7 +12,9 @@ namespace ProceduralLife.Simulation
         [field: SerializeField]
         public SimulationEntityBrainDefinition BrainDefinition { get; private set; }
         
+        // [TODO] Make a stat out of this, we might not want all entities to have speed
+        // A speed of 1 means it takes 1 second to move 1 tile.
         [field: SerializeField]
-        public ulong Speed { get; private set; }
+        public float Speed { get; private set; } = 1f;
     }
 }

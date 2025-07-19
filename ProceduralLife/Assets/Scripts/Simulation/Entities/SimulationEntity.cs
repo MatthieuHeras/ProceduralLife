@@ -1,5 +1,6 @@
 ﻿using System;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 namespace ProceduralLife.Simulation
 {
@@ -9,10 +10,13 @@ namespace ProceduralLife.Simulation
         {
             this.Definition = definition;
             this.state = new SimulationEntityBrain(definition.BrainDefinition, this);
+            // [TODO] Implement proper stat system
+            this.Speed = definition.Speed * Random.Range(0.5f, 2f);
         }
         
         public readonly SimulationEntityDefinition Definition;
         public Vector2Int Position { get; private set; } = Vector2Int.zero;
+        public float Speed { get; private set; }
         
         public event Action<Vector2Int, ulong, ulong, bool> MoveStartEvent = delegate { };
         public event Action<Vector2Int> MoveEndEvent = delegate { };
