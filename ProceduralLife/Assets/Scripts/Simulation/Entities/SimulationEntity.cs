@@ -1,11 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Assertions;
 
 namespace ProceduralLife.Simulation
 {
-    public class SimulationEntity : ASimulationElement
+    public class SimulationEntity : ASimulationElement<StateMomentData>
     {
         public SimulationEntity(SimulationEntityDefinition definition)
         {
@@ -19,55 +17,34 @@ namespace ProceduralLife.Simulation
         public event Action<Vector2Int, ulong, ulong, bool> MoveStartEvent = delegate { };
         public event Action<Vector2Int> MoveEndEvent = delegate { };
         
-        private readonly List<AStateData> stateData = new();
-        
-        private int currentIndex = -1;
         private AState state;
-        
-        public override void Do()
+
+        protected override StateMomentData ApplyDo()
         {
-            Assert.IsTrue(this.currentIndex < this.stateData.Count);
-            
-            // Break future data, should happen when we break the replay to start a new timeline
-            if (this.currentIndex < this.stateData.Count - 1)
-                this.stateData.RemoveRange(this.currentIndex + 1, this.stateData.Count - 1 - this.currentIndex);
-            
             StateDoData stateDoData = this.state.Do();
-            
             SimulationMoment executionMoment = this.NextExecutionMoment;
-            SimulationContext.SimulationTime.DelayElement(this, stateDoData.Delay);
+            SimulationMoment nextMoment = SimulationContext.SimulationTime.DelayElement(this, stateDoData.Delay);
             
             stateDoData.StateData.InitState(this.state)
                                  .InitExecutionMoments(executionMoment, this.NextExecutionMoment);
             
-            this.stateData.Add(stateDoData.StateData);
-            this.currentIndex++;
-            
             this.state = stateDoData.NextState;
-        }
-        
-        public override void Undo()
-        {
-            AStateData currentStateData = this.stateData[this.currentIndex];
-            this.state = currentStateData.State;
             
-            this.state.Undo(currentStateData);
-            this.currentIndex--;
+            return new StateMomentData(nextMoment, stateDoData.StateData);
+        }
 
-            if (this.currentIndex >= 0)
-                this.PreviousExecutionMoment = this.stateData[this.currentIndex].ExecutionMoment;
-        }
-        
-        public override void Redo()
+        protected override void ApplyUndo(StateMomentData stateMomentData)
         {
-            Assert.IsTrue(this.currentIndex < this.stateData.Count - 1);
-            this.currentIndex++;
-            
-            this.state = this.stateData[this.currentIndex].State;
-            this.state.Redo(this.stateData[this.currentIndex]);
-            this.NextExecutionMoment = this.stateData[this.currentIndex].NextExecutionMoment;
+            this.state = stateMomentData.StateData.State;
+            this.state.Undo(stateMomentData.StateData);
         }
-        
+
+        protected override void ApplyRedo(StateMomentData stateMomentData)
+        {
+            this.state = stateMomentData.StateData.State;
+            this.state.Redo(stateMomentData.StateData);
+        }
+
         public void MoveStart(Vector2Int newTarget, ulong startMoment, ulong duration, bool forward)
         {
             this.MoveStartEvent.Invoke(newTarget, startMoment, duration, forward);

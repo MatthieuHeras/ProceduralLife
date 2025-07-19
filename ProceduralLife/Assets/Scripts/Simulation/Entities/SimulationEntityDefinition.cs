@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using ProceduralLife.Simulation.View;
+using UnityEngine;
 
 namespace ProceduralLife.Simulation
 {
@@ -6,6 +7,12 @@ namespace ProceduralLife.Simulation
     public class SimulationEntityDefinition : ScriptableObject
     {
         [field: SerializeField]
-        public SimulationEntityBrainDefinition BrainDefinition;
+        public SimulationEntityView View { get; private set; }
+        
+        [field: SerializeField]
+        public SimulationEntityBrainDefinition BrainDefinition { get; private set; }
+        
+        [field: SerializeField]
+        public ulong Speed { get; private set; }
     }
 }

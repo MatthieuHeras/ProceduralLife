@@ -463,6 +463,51 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 55e59df4bcdd4a6790c7729932b9bd18, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!1 &1588053636
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1588053638}
+  - component: {fileID: 1588053637}
+  m_Layer: 0
+  m_Name: InputManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1588053637
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1588053636}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 95d294eb76df45ffa2fc07aa52ba4f6a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  testEntity: {fileID: 11400000, guid: 4f14d6fb41815d840b3197fa7a877ecb, type: 2}
+--- !u!4 &1588053638
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1588053636}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1869245476
 GameObject:
   m_ObjectHideFlags: 0
@@ -587,7 +632,15 @@ PrefabInstance:
     - target: {fileID: 4370710582995763620, guid: e5173972f2d51064d9cbae8b8893f8a9, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
-      objectReference: {fileID: 1255795124}
+      objectReference: {fileID: 1588053637}
+    - target: {fileID: 4370710582995763620, guid: e5173972f2d51064d9cbae8b8893f8a9, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: Add100SheepButton
+      objectReference: {fileID: 0}
+    - target: {fileID: 4370710582995763620, guid: e5173972f2d51064d9cbae8b8893f8a9, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: ProceduralLife.Inputs.InputManager, ProceduralLife
+      objectReference: {fileID: 0}
     - target: {fileID: 6239419902843192679, guid: e5173972f2d51064d9cbae8b8893f8a9, type: 3}
       propertyPath: m_Name
       value: UI
@@ -611,7 +664,15 @@ PrefabInstance:
     - target: {fileID: 7188491346463576875, guid: e5173972f2d51064d9cbae8b8893f8a9, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
-      objectReference: {fileID: 1255795124}
+      objectReference: {fileID: 1588053637}
+    - target: {fileID: 7188491346463576875, guid: e5173972f2d51064d9cbae8b8893f8a9, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: AddSheepButton
+      objectReference: {fileID: 0}
+    - target: {fileID: 7188491346463576875, guid: e5173972f2d51064d9cbae8b8893f8a9, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: ProceduralLife.Inputs.InputManager, ProceduralLife
+      objectReference: {fileID: 0}
     - target: {fileID: 9215879908376090355, guid: e5173972f2d51064d9cbae8b8893f8a9, type: 3}
       propertyPath: m_Pivot.x
       value: 0
@@ -1016,3 +1077,4 @@ SceneRoots:
   - {fileID: 693254991513616146}
   - {fileID: 1869245479}
   - {fileID: 2827680243293310260}
+  - {fileID: 1588053638}

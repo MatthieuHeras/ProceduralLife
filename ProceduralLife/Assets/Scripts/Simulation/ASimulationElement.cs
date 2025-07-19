@@ -1,31 +1,62 @@
-﻿using MHLib.CommandPattern;
+﻿using System.Collections.Generic;
 
 namespace ProceduralLife.Simulation
 {
-    public abstract class ASimulationElement : ACommand
+    public abstract class ASimulationElement<TMomentData> : ASimulationElementBase
+        where TMomentData : MomentData
     {
-        public delegate void TimeEvent(bool timeIsForward);
+        private readonly List<TMomentData> momentsData = new();
+        private int currentIndex = -1;
         
-        public event TimeEvent BirthEvent = delegate { };
-        public event TimeEvent DeathEvent = delegate { };
+        public override void Do()
+        {
+            // Break future data, should happen when we break the replay to start a new timeline
+            if (this.currentIndex < this.momentsData.Count - 1)
+            {
+                int nextIndex = this.currentIndex + 1;
+                this.momentsData.RemoveRange(nextIndex, this.momentsData.Count - nextIndex);
+            }
+            
+            SimulationMoment currentMoment = this.currentIndex == -1 ? this.birthMoment : this.momentsData[this.currentIndex].NextSimulationMoment;
+            
+            TMomentData newMomentData = this.ApplyDo();
+            this.momentsData.Add(newMomentData);
+            this.currentIndex++;
+            
+            this.PreviousExecutionMoment = currentMoment;
+            this.NextExecutionMoment = newMomentData.NextSimulationMoment; 
+        }
+        
+        public override void Undo()
+        {
+            this.ApplyUndo(this.momentsData[this.currentIndex]);
+            
+            this.currentIndex--;
+            
+            this.PreviousExecutionMoment = this.currentIndex switch
+            {
+                -1 => new SimulationMoment(0, 0),
+                0 => this.birthMoment,
+                _ => this.momentsData[this.currentIndex - 1].NextSimulationMoment
+            };
+            
+            this.NextExecutionMoment = this.currentIndex == -1 ? this.birthMoment : this.momentsData[this.currentIndex].NextSimulationMoment;
+        }
+        
+        public override void Redo()
+        {
+            SimulationMoment currentMoment = this.currentIndex == -1 ? this.birthMoment : this.momentsData[this.currentIndex].NextSimulationMoment;
+            
+            this.currentIndex++;
+            
+            this.ApplyRedo(this.momentsData[this.currentIndex]);
 
-        public void InitBirthMoment(SimulationMoment birthMoment)
-        {
-            this.NextExecutionMoment = birthMoment;
-            this.PreviousExecutionMoment = null;
+            this.PreviousExecutionMoment = currentMoment;
+            this.NextExecutionMoment = this.momentsData[this.currentIndex].NextSimulationMoment;
         }
         
-        public void ReachBirthMoment(bool timeIsForward)
-        {
-            this.BirthEvent.Invoke(timeIsForward);
-        }
-        
-        public void ReachDeathMoment(bool timeIsForward)
-        {
-            this.DeathEvent.Invoke(timeIsForward);
-        }
-        
-        public SimulationMoment PreviousExecutionMoment;
-        public SimulationMoment NextExecutionMoment;
+        protected abstract TMomentData ApplyDo();
+        protected abstract void ApplyUndo(TMomentData momentData);
+        protected abstract void ApplyRedo(TMomentData momentData);
     }
 }
