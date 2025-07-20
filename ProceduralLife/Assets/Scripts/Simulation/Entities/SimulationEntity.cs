@@ -21,7 +21,7 @@ namespace ProceduralLife.Simulation
         
         // [TODO] Make those stats
         public float Speed { get; private set; }
-        public float Hunger { get; set; }
+        public long Hunger { get; set; }
         
         public event Action<Vector2Int, ulong, ulong, bool> MoveStartEvent = delegate { };
         public event Action<Vector2Int> MoveEndEvent = delegate { };

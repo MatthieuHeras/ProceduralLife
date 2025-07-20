@@ -1,4 +1,5 @@
 ﻿using ProceduralLife.Simulation.View;
+using Sirenix.OdinInspector;
 using UnityEngine;
 
 namespace ProceduralLife.Simulation
@@ -19,12 +20,12 @@ namespace ProceduralLife.Simulation
         
         // [TODO] Make it a stat
         // If it reaches 0, the entity dies.
-        [field: SerializeField]
-        public ulong MaxHunger { get; private set; } = 1000;
+        [field: SerializeField, MinValue(1)]
+        public long MaxHunger { get; private set; } = 1000;
         
         // [TODO] Make it a stat
         // How much is deducted from the hunger each second.
-        [field: SerializeField]
-        public ulong HungerRate { get; private set; } = 10;
+        [field: SerializeField, MinValue(0)]
+        public long HungerRate { get; private set; } = 10;
     }
 }
