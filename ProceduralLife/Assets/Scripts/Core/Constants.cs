@@ -5,5 +5,12 @@ namespace ProceduralLife
     public static class Constants
     {
         public static readonly float TILE_SIZE = 2f / Mathf.Sqrt(3f);
+
+        public static class Editor
+        {
+            public const string PATH_BASE = "PL/";
+            
+            public const string PATH_CONDITION = PATH_BASE + "Conditions/";
+        }
     }
 }
