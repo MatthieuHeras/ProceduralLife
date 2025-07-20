@@ -1,5 +1,6 @@
 ﻿using MHLib;
 using MHLib.Hexagon;
+using ProceduralLife.Conditions;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -18,7 +19,7 @@ namespace ProceduralLife.Simulation
             {
                 foreach (GoalDefinition behaviour in behaviourList)
                 {
-                    if (behaviour.Condition)
+                    if (behaviour.Condition.CheckOnce(new ConditionContext()))
                         return behaviour.Behaviour.GetState(this.entity);
                 }
 
