@@ -6,6 +6,5 @@ namespace ProceduralLife.Conditions
     [Serializable]
     public class GameConditionField : AConditionField<ConditionContext>
     {
-        
     }
 }
