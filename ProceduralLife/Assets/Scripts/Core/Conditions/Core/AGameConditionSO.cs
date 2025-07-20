@@ -2,8 +2,7 @@
 
 namespace ProceduralLife.Conditions
 {
-    public abstract class AGameConditionSO<TGameCondition> : AConditionSO<TGameCondition, ConditionContext>
-        where TGameCondition : AGameCondition
+    public abstract class AGameConditionSO : AConditionSO<ConditionContext>
     {
         
     }

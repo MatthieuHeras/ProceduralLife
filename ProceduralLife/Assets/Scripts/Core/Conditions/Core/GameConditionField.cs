@@ -4,7 +4,7 @@ using System;
 namespace ProceduralLife.Conditions
 {
     [Serializable]
-    public class GameConditionField : AConditionField<AGameConditionSO<AGameCondition>, AGameCondition, ConditionContext>
+    public class GameConditionField : AConditionField<ConditionContext>
     {
         
     }
