@@ -1,3 +1,4 @@
+using ProceduralLife.Actions;
 using ProceduralLife.Conditions;
 using UnityEngine;
 
@@ -8,5 +9,9 @@ namespace ProceduralLife
     {
         [SerializeField]
         private GameConditionField condition;
+        
+        [SerializeField]
+        private GameActionField action;
+        
     }
 }

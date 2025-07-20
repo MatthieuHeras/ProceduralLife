@@ -10,7 +10,8 @@ namespace ProceduralLife
         {
             public const string PATH_BASE = "PL/";
             
-            public const string PATH_CONDITION = PATH_BASE + "Conditions/";
+            public const string PATH_CONDITIONS = PATH_BASE + "Conditions/";
+            public const string PATH_ACTIONS = PATH_BASE + "Actions/";
         }
     }
 }
