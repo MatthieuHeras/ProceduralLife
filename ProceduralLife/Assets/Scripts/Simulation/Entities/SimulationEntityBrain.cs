@@ -19,7 +19,7 @@ namespace ProceduralLife.Simulation
             {
                 foreach (GoalDefinition behaviour in behaviourList)
                 {
-                    if (behaviour.Condition.CheckOnce(new ConditionContext()))
+                    if (behaviour.Condition.CheckOnce(new ConditionContext(this.entity)))
                         return behaviour.Behaviour.GetState(this.entity);
                 }
 
