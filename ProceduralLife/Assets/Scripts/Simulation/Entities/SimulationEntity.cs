@@ -21,10 +21,11 @@ namespace ProceduralLife.Simulation
         
         // [TODO] Make those stats
         public float Speed { get; private set; }
-        public long Hunger { get; set; }
+        public long Hunger { get; private set; }
         
         public event Action<Vector2Int, ulong, ulong, bool> MoveStartEvent = delegate { };
         public event Action<Vector2Int> MoveEndEvent = delegate { };
+        public event Action HungerChanged = delegate { }; 
         
         private AState state;
 
@@ -63,6 +64,12 @@ namespace ProceduralLife.Simulation
         {
             this.Position = newPosition;
             this.MoveEndEvent.Invoke(newPosition);
+        }
+
+        public void ChangeHunger(long hungerOffset)
+        {
+            Hunger += hungerOffset;
+            this.HungerChanged.Invoke();
         }
     }
 }

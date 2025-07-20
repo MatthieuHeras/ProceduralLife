@@ -9,11 +9,15 @@ namespace ProceduralLife.Simulation.View
         [SerializeField, Required]
         private GameObject viewParent = null;
         
+        [SerializeField, Required]
+        private Transform hungerTransform = null;
+        
         private bool isMoving = false;
         private ulong moveStartMoment;
         private ulong moveEndMoment;
         private Vector3 moveStartPosition = Vector3.zero;
         private Vector3 moveEndPosition = Vector3.zero;
+        private Vector3 originalHungerScale;
         
         private SimulationEntity entity;
         private bool hooked = false;
@@ -69,6 +73,13 @@ namespace ProceduralLife.Simulation.View
             this.viewParent.SetActive(!timeIsForward);
         }
         
+        private void OnHungerChanged()
+        {
+            float hungerRatio = (float)this.entity.Hunger / (float)this.entity.Definition.MaxHunger;
+            hungerRatio = 0.5f + (hungerRatio / 2f);
+            this.hungerTransform.localScale = this.originalHungerScale * hungerRatio;
+        }
+        
         private void HookToEntity()
         {
             if (this.hooked)
@@ -78,6 +89,7 @@ namespace ProceduralLife.Simulation.View
             this.entity.MoveEndEvent += this.OnMoveEnd;
             this.entity.BirthEvent += this.OnBirth;
             this.entity.DeathEvent += this.OnDeath;
+            this.entity.HungerChanged += this.OnHungerChanged;
             
             SimulationTime.CurrentTimeChanged += this.UpdateTime;
 
@@ -94,7 +106,8 @@ namespace ProceduralLife.Simulation.View
             SimulationTime.CurrentTimeChanged -= this.UpdateTime;
             this.entity.BirthEvent -= this.OnBirth;
             this.entity.DeathEvent -= this.OnDeath;
-
+            this.entity.HungerChanged -= this.OnHungerChanged;
+            
             this.hooked = false;
         }
         
@@ -102,6 +115,7 @@ namespace ProceduralLife.Simulation.View
         private void Awake()
         {
             this.viewParent.SetActive(false);
+            this.originalHungerScale = this.hungerTransform.localScale;
         }
 
         private void OnEnable()

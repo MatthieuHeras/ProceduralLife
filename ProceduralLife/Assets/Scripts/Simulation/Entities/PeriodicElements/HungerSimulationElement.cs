@@ -24,7 +24,7 @@ namespace ProceduralLife.Simulation.PeriodicElements
                 if (element is SimulationEntity entity)
                 {
                     // Do not clamp at 0, easier to revive them with the proper hunger value when undoing 
-                    entity.Hunger -= entity.Definition.HungerRate;
+                    entity.ChangeHunger(-entity.Definition.HungerRate);
                     
                     if (entity.Hunger <= 0)
                         killedElements.Add(this.time.KillElement(entity));
@@ -43,7 +43,7 @@ namespace ProceduralLife.Simulation.PeriodicElements
             {
                 if (element is SimulationEntity entity)
                 {
-                    entity.Hunger += entity.Definition.HungerRate;
+                    entity.ChangeHunger(entity.Definition.HungerRate);
                     Assert.IsTrue(entity.Hunger <= entity.Definition.MaxHunger);
                 }
             }
@@ -55,7 +55,7 @@ namespace ProceduralLife.Simulation.PeriodicElements
             {
                 if (element is SimulationEntity entity)
                 {
-                    entity.Hunger -= entity.Definition.HungerRate;
+                    entity.ChangeHunger(-entity.Definition.HungerRate);
                     Assert.IsTrue(entity.Hunger > 0 || momentData.KilledElements.Contains(element));
                 }
             }
