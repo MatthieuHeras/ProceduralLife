@@ -10,13 +10,18 @@ namespace ProceduralLife.Simulation
         {
             this.Definition = definition;
             this.state = new SimulationEntityBrain(definition.BrainDefinition, this);
+            
             // [TODO] Implement proper stat system
             this.Speed = definition.Speed * Random.Range(0.5f, 2f);
+            this.Hunger = definition.MaxHunger;
         }
         
         public readonly SimulationEntityDefinition Definition;
         public Vector2Int Position { get; private set; } = Vector2Int.zero;
+        
+        // [TODO] Make those stats
         public float Speed { get; private set; }
+        public float Hunger { get; set; }
         
         public event Action<Vector2Int, ulong, ulong, bool> MoveStartEvent = delegate { };
         public event Action<Vector2Int> MoveEndEvent = delegate { };

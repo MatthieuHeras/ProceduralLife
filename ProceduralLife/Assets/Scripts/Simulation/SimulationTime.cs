@@ -1,4 +1,5 @@
 ﻿using ProceduralLife.Inputs;
+using ProceduralLife.Simulation.PeriodicElements;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -17,15 +18,15 @@ namespace ProceduralLife.Simulation
             InputManager.SimulationChanged += this.OnSimulationChanged;
             
             this.SpawnElement(new InputSimulationElement(), 0ul);
+            this.SpawnElement(new HungerSimulationElement(1000), 0ul);
         }
         
         ~SimulationTime()
         {
             InputManager.SimulationChanged -= this.OnSimulationChanged;
         }
-
-        // Sorted lists
-        private readonly List<ASimulationElementBase> aliveElements = new();
+        
+        public readonly List<ASimulationElementBase> AliveElements = new();
 
         public ulong CurrentTime { get; private set; }
         private ulong presentTime;
@@ -70,10 +71,10 @@ namespace ProceduralLife.Simulation
             {
                 case E_IterationMethodType.PLAY:
                 case E_IterationMethodType.REPLAY:
-                    this.aliveElements.Sort((element1, element2) => element1.NextExecutionMoment.IsBefore(element2.NextExecutionMoment) ? -1 : 1);
+                    this.AliveElements.Sort((element1, element2) => element1.NextExecutionMoment.IsBefore(element2.NextExecutionMoment) ? -1 : 1);
                     break;
                 case E_IterationMethodType.BACKWARD:
-                    this.aliveElements.Sort((element1, element2) => element1.PreviousExecutionMoment.IsBefore(element2.PreviousExecutionMoment) ? -1 : 1);
+                    this.AliveElements.Sort((element1, element2) => element1.PreviousExecutionMoment.IsBefore(element2.PreviousExecutionMoment) ? -1 : 1);
                     break;
             }
             
@@ -91,29 +92,29 @@ namespace ProceduralLife.Simulation
         #region ELEMENTS LIFE
         public SimulationMoment DelayElement(ASimulationElementBase element, ulong delay)
         {
-            Assert.IsTrue(this.aliveElements.Contains(element));
-            Assert.IsTrue(this.aliveElements[0] == element);
+            Assert.IsTrue(this.AliveElements.Contains(element));
+            Assert.IsTrue(this.AliveElements[0] == element);
             
-            this.aliveElements.RemoveAt(0);
+            this.AliveElements.RemoveAt(0);
             
             ulong nextExecutionTime = element.NextExecutionMoment.Time + delay;
             
             int elementIndex = 0;
-            while (elementIndex < this.aliveElements.Count && this.aliveElements[elementIndex].NextExecutionMoment.IsBefore(nextExecutionTime))
+            while (elementIndex < this.AliveElements.Count && this.AliveElements[elementIndex].NextExecutionMoment.IsBefore(nextExecutionTime))
                 elementIndex++;
             
             bool isSimultaneous = false;
-            while (elementIndex < this.aliveElements.Count && this.aliveElements[elementIndex].NextExecutionMoment.Time == nextExecutionTime)
+            while (elementIndex < this.AliveElements.Count && this.AliveElements[elementIndex].NextExecutionMoment.Time == nextExecutionTime)
             {
                 elementIndex++;
                 isSimultaneous = true;
             }
             
-            int order = isSimultaneous ? this.aliveElements[elementIndex - 1].NextExecutionMoment.Order + 1 : 0;
+            int order = isSimultaneous ? this.AliveElements[elementIndex - 1].NextExecutionMoment.Order + 1 : 0;
             
             SimulationMoment nextExecutionMoment = new(nextExecutionTime, order);
             
-            this.aliveElements.Insert(elementIndex, element);
+            this.AliveElements.Insert(elementIndex, element);
 
             return nextExecutionMoment;
         }
@@ -125,22 +126,22 @@ namespace ProceduralLife.Simulation
             Assert.IsTrue(birthTime <= this.CurrentTime);
 
             int elementIndex = 0;
-            while (elementIndex < this.aliveElements.Count && this.aliveElements[elementIndex].NextExecutionMoment.IsBefore(birthTime))
+            while (elementIndex < this.AliveElements.Count && this.AliveElements[elementIndex].NextExecutionMoment.IsBefore(birthTime))
                 elementIndex++;
 
             bool isSimultaneous = false;
-            while (elementIndex < this.aliveElements.Count && this.aliveElements[elementIndex].NextExecutionMoment.Time == birthTime)
+            while (elementIndex < this.AliveElements.Count && this.AliveElements[elementIndex].NextExecutionMoment.Time == birthTime)
             {
                 elementIndex++;
                 isSimultaneous = true;
             }
 
-            int birthOrder = isSimultaneous ? this.aliveElements[elementIndex - 1].NextExecutionMoment.Order + 1 : 0;
+            int birthOrder = isSimultaneous ? this.AliveElements[elementIndex - 1].NextExecutionMoment.Order + 1 : 0;
             SimulationMoment birthMoment = new(birthTime, birthOrder);
             
             element.InitBirthMoment(birthMoment);
             
-            this.aliveElements.Insert(elementIndex, element);
+            this.AliveElements.Insert(elementIndex, element);
             
             element.ReachBirthMoment(true);
         }
@@ -148,39 +149,42 @@ namespace ProceduralLife.Simulation
         /// <summary> Undo the spawn a new element in the simulation while it plays BACKWARD. </summary>
         public void DespawnElement(ASimulationElementBase element)
         {
-            this.aliveElements.Remove(element);
+            this.AliveElements.Remove(element);
             element.ReachBirthMoment(false);
         }
         
         /// <summary> Redo the spawn a new element in the simulation while it REPLAYS. </summary>
         public void RespawnElement(ASimulationElementBase element)
         {
-            Assert.IsTrue(!this.aliveElements.Contains(element));
+            Assert.IsTrue(!this.AliveElements.Contains(element));
             int elementIndex = 0;
             
-            while (elementIndex < this.aliveElements.Count && element.NextExecutionMoment.IsAfter(this.aliveElements[elementIndex].NextExecutionMoment))
+            while (elementIndex < this.AliveElements.Count && element.NextExecutionMoment.IsAfter(this.AliveElements[elementIndex].NextExecutionMoment))
                 elementIndex++;
             
-            this.aliveElements.Insert(elementIndex, element);
+            this.AliveElements.Insert(elementIndex, element);
             element.ReachBirthMoment(true);
         }
         
         /// <summary> Remove an element from the simulation while it plays FORWARD. </summary>
-        public void KillElement(ASimulationElementBase element)
+        public ASimulationElementBase KillElement(ASimulationElementBase element)
         {
-            this.aliveElements.Remove(element);
+            Assert.IsTrue(this.AliveElements.Contains(element));
+            
+            this.AliveElements.Remove(element);
             element.ReachDeathMoment(true);
+            return element;
         }
         
         /// <summary> Undo the removal of an element from the simulation while it plays BACKWARD. </summary>
         public void ResurrectElement(ASimulationElementBase element)
         {
-            int elementIndex = this.aliveElements.Count;
+            int elementIndex = this.AliveElements.Count;
             
-            while (elementIndex > 0 && element.PreviousExecutionMoment.IsBefore(this.aliveElements[elementIndex].PreviousExecutionMoment))
+            while (elementIndex > 0 && element.PreviousExecutionMoment.IsBefore(this.AliveElements[elementIndex - 1].PreviousExecutionMoment))
                 elementIndex--;
             
-            this.aliveElements.Insert(elementIndex, element);
+            this.AliveElements.Insert(elementIndex, element);
             element.ReachDeathMoment(false);
         }
         
@@ -245,43 +249,43 @@ namespace ProceduralLife.Simulation
         #region APPLY ELEMENTS
         private void ApplyElementsForward()
         {
-            while (this.aliveElements.Count > 0 && this.aliveElements[0].NextExecutionMoment.IsBeforeOrEqual(this.CurrentTime))
+            while (this.AliveElements.Count > 0 && this.AliveElements[0].NextExecutionMoment.IsBeforeOrEqual(this.CurrentTime))
             {
-                ASimulationElementBase element = this.aliveElements[0];
+                ASimulationElementBase element = this.AliveElements[0];
                 element.Do();
             }
         }
         
         private void ApplyElementsBackward()
         {
-            while (this.aliveElements.Count > 0 && this.aliveElements[^1].PreviousExecutionMoment.IsAfterOrEqual(this.CurrentTime))
+            while (this.AliveElements.Count > 0 && this.AliveElements[^1].PreviousExecutionMoment.IsAfterOrEqual(this.CurrentTime))
             {
-                ASimulationElementBase element = this.aliveElements[^1];
+                ASimulationElementBase element = this.AliveElements[^1];
                 element.Undo();
                 
-                int elementIndex = this.aliveElements.Count - 1;
-                while (elementIndex > 0 && this.aliveElements[elementIndex - 1].PreviousExecutionMoment.IsAfter(element.PreviousExecutionMoment))
+                int elementIndex = this.AliveElements.Count - 1;
+                while (elementIndex > 0 && this.AliveElements[elementIndex - 1].PreviousExecutionMoment.IsAfter(element.PreviousExecutionMoment))
                     elementIndex--;
                 
-                this.aliveElements.RemoveAt(this.aliveElements.Count - 1);
-                this.aliveElements.Insert(elementIndex, element);
+                this.AliveElements.RemoveAt(this.AliveElements.Count - 1);
+                this.AliveElements.Insert(elementIndex, element);
             }
         }
         
         private void ApplyElementsReplay()
         {
-            while (this.aliveElements.Count > 0 && this.aliveElements[0].NextExecutionMoment.IsBeforeOrEqual(this.CurrentTime))
+            while (this.AliveElements.Count > 0 && this.AliveElements[0].NextExecutionMoment.IsBeforeOrEqual(this.CurrentTime))
             {
-                ASimulationElementBase element = this.aliveElements[0];
+                ASimulationElementBase element = this.AliveElements[0];
                 
                 element.Redo();
                 
                 int elementIndex = 0;
-                while (elementIndex < this.aliveElements.Count - 1 && this.aliveElements[elementIndex + 1].NextExecutionMoment.IsBefore(element.NextExecutionMoment))
+                while (elementIndex < this.AliveElements.Count - 1 && this.AliveElements[elementIndex + 1].NextExecutionMoment.IsBefore(element.NextExecutionMoment))
                     elementIndex++;
                 
-                this.aliveElements.RemoveAt(0);
-                this.aliveElements.Insert(elementIndex, element);
+                this.AliveElements.RemoveAt(0);
+                this.AliveElements.Insert(elementIndex, element);
             }
         }
         #endregion APPLY ELEMENTS
