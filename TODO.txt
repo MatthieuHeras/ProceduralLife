@@ -7,5 +7,6 @@
   - ...
 - Implement trees as entities
 - Implement input for spawning entities properly (place)
+- Expose wait duration when there's nothing to do for entities
 - Day/Night cycle
 - Weather
