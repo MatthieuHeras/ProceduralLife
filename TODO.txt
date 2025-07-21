@@ -1,4 +1,4 @@
-- Condition system (Configurable Scriptable Object)
+- Implement behaviours
 - Stat system:
   - Speed
   - Hunger
@@ -6,5 +6,6 @@
   - Food Value (tag system + value)
   - ...
 - Implement trees as entities
+- Implement input for spawning entities properly (place)
 - Day/Night cycle
 - Weather
