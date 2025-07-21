@@ -1,10 +1,7 @@
 ﻿namespace ProceduralLife.Actions
 {
-    public class DummyAction : AGameAction
+    public sealed class DummyAction : AGameAction
     {
-        public override ActionResult Trigger(ActionContext context, ActionTarget target)
-        {
-            throw new System.NotImplementedException();
-        }
+        public override ActionResult Trigger(ActionContext context, ActionTarget target) => new();
     }
 }

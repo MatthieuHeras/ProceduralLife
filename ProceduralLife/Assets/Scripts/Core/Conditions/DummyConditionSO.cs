@@ -5,7 +5,7 @@ using UnityEngine;
 namespace ProceduralLife.Conditions
 {
     [CreateAssetMenu(fileName = "Dummy", menuName = Constants.Editor.PATH_CONDITIONS + "Dummy")]
-    public class DummyConditionSO : AGameConditionSO
+    public sealed class DummyConditionSO : AGameConditionSO
     {
         public override ACondition<ConditionContext> CreateCondition(object parameter, ConditionContext context) => new DummyCondition(parameter, context);
 

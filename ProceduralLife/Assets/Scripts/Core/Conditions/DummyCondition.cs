@@ -1,24 +1,11 @@
 ﻿namespace ProceduralLife.Conditions
 {
-    public class DummyCondition : AGameCondition
+    public sealed class DummyCondition : AGameCondition
     {
-        public DummyCondition(object parameter, ConditionContext context) : base(parameter, context)
-        {
-        }
-
-        protected override bool Check()
-        {
-            throw new System.NotImplementedException();
-        }
-
-        protected override void HookToContext()
-        {
-            throw new System.NotImplementedException();
-        }
-
-        protected override void UnhookToContext()
-        {
-            throw new System.NotImplementedException();
-        }
+        public DummyCondition(object parameter, ConditionContext context) : base(parameter, context) { }
+        
+        protected override bool Check() => true;
+        protected override void HookToContext() { }
+        protected override void UnhookToContext() { }
     }
 }
