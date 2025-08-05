@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace ProceduralLife.Simulation
 {
-    [CreateAssetMenu(fileName = "NewEntity", menuName = "PL/Entity/Entity")]
+    [CreateAssetMenu(fileName = "NewEntity", menuName = Constants.Editor.PATH_ENTITY + "Entity")]
     public class SimulationEntityDefinition : ScriptableObject
     {
         [field: SerializeField]

@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace ProceduralLife.Simulation
 {
-    [CreateAssetMenu(fileName = "NewBrain", menuName = "PL/Entity/Brain")]
+    [CreateAssetMenu(fileName = "NewBrain", menuName = Constants.Editor.PATH_ENTITY + "Brain")]
     public class SimulationEntityBrainDefinition : StateMachineDefinition
     {
         [field: SerializeField]

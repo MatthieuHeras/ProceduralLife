@@ -8,7 +8,9 @@ namespace ProceduralLife
 
         public static class Editor
         {
-            public const string PATH_BASE = "PL/";
+            public const string PATH_BASE = "Procedural Life/";
+            public const string PATH_ENTITY = PATH_BASE + "Entity/";
+            public const string PATH_MAP = PATH_BASE + "Map/";
             
             public const string PATH_CONDITIONS = PATH_BASE + "Conditions/";
             public const string PATH_ACTIONS = PATH_BASE + "Actions/";

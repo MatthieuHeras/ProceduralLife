@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace ProceduralLife.Map
 {
-    [CreateAssetMenu(fileName = "NewTile", menuName = "PL/Map/Tile")]
+    [CreateAssetMenu(fileName = "NewTile", menuName = Constants.Editor.PATH_MAP + "Tile")]
     public class TileDefinition : ScriptableObject
     {
         [field: SerializeField, Required]
