@@ -14,6 +14,7 @@ namespace ProceduralLife.Simulation
             // [TODO] Implement proper stat system
             this.Speed = definition.Speed * Random.Range(0.5f, 2f);
             this.Hunger = definition.MaxHunger;
+            this.SightRange = definition.SightRange;
         }
         
         public readonly SimulationEntityDefinition Definition;
@@ -22,6 +23,7 @@ namespace ProceduralLife.Simulation
         // [TODO] Make those stats
         public float Speed { get; private set; }
         public long Hunger { get; private set; }
+        public uint SightRange { get; private set; }
         
         public event Action<Vector2Int, ulong, ulong, bool> MoveStartEvent = delegate { };
         public event Action<Vector2Int> MoveEndEvent = delegate { };

@@ -2,16 +2,14 @@
 
 namespace ProceduralLife.Simulation
 {
-    public class StateMachine : AState
+    public abstract class AStateMachine : AState
     {
-        public StateMachine(StateMachineDefinition definition, SimulationEntity entity, bool canEnd) : base(entity)
+        /// <param name="canEnd"> Set to false if you don't want to ever get out of the state machine. Useful for core state machines.</param>
+        protected AStateMachine(SimulationEntity entity, bool canEnd) : base(entity)
         {
-            Assert.IsNotNull(definition, $"Missing definition in entity {entity.Definition.name}");
-            this.Definition = definition;
             this.canEnd = canEnd;
         }
-
-        public readonly StateMachineDefinition Definition;
+        
         protected AState state = null;
         private readonly bool canEnd;
         
@@ -47,6 +45,6 @@ namespace ProceduralLife.Simulation
             this.state.Redo(stateMachineData.ChildStateData);
         }
         
-        protected virtual AState GetNewState() => this.state;
+        protected abstract AState GetNewState();
     }
 }

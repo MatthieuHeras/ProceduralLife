@@ -7,56 +7,72 @@ using UnityEngine;
 
 namespace ProceduralLife.Simulation
 {
-    public class SimulationEntityBrain : StateMachine
+    public class SimulationEntityBrain : AStateMachine
     {
-        public SimulationEntityBrain(SimulationEntityBrainDefinition definition, SimulationEntity entity) : base(definition, entity, false)
+        public SimulationEntityBrain(SimulationEntityBrainDefinition definition, SimulationEntity entity) : base(entity, false)
         {
+            this.definition = definition;
         }
 
+        private readonly SimulationEntityBrainDefinition definition;
+
+        private bool dealingWithDanger = false;
+        
         protected override AState GetNewState()
         {
-            AState GetStateFromBehaviourList(List<GoalDefinition> behaviourList)
+            AState GetStateFromBehaviourList(List<GoalDefinition> behaviourList, bool isDanger = false)
             {
                 foreach (GoalDefinition behaviour in behaviourList)
                 {
                     if (behaviour.Condition.CheckOnce(new ConditionContext(this.entity)))
-                        return behaviour.Behaviour.GetState(this.entity);
+                    {
+                        if (isDanger)
+                            this.dealingWithDanger = true;
+                        return behaviour.Behaviour.GetBehaviour(new BehaviourContext(this.entity));
+                    }
                 }
-
+                
                 return null;
             }
             
-            SimulationEntityBrainDefinition brainDefinition = (SimulationEntityBrainDefinition)this.Definition;
+            // 1- If the entity is already dealing with something of high priority, it keeps doing so at all costs.
+            if (this.dealingWithDanger)
+            {
+                if (this.state != null)
+                    return this.state;
+
+                this.dealingWithDanger = false;
+            }
             
-            // 1 - If the entity is in danger, it responds to it immediately.
-            AState newState = GetStateFromBehaviourList(brainDefinition.Dangers);
+            // 2 - If it is in danger, it responds to it immediately.
+            AState newState = GetStateFromBehaviourList(this.definition.Dangers, true);
             if (newState != null)
                 return newState;
             
-            // 2 - If it's doing something, it finishes it.
+            // 3 - If it is doing something of lower priority, it finishes it.
             if (this.state != null)
                 return this.state;
             
-            // 3 - It satisfies its needs.
-            newState = GetStateFromBehaviourList(brainDefinition.Needs);
+            // 4 - It satisfies its needs.
+            newState = GetStateFromBehaviourList(this.definition.Needs);
             if (newState != null)
                 return newState;
             
-            // 4 - It satisfies its wants.
-            newState = GetStateFromBehaviourList(brainDefinition.Wants);
+            // 5 - It satisfies its wants.
+            newState = GetStateFromBehaviourList(this.definition.Wants);
             if (newState != null)
                 return newState;
             
-            // 5 - It waits.
-            // [TODO] Define wait duration, for example through entity definition or global constant.
-            return new WaitState(this.entity, 100);
+            // 6 - It waits. This should never occur in a properly integrated AI and is more of a safety thing.
+            // Feel free to integrate wandering or waiting as something the entity wants, with low priority.
+            //return new WaitState(this.entity, Constants.Simulation.DEFAULT_WAIT_DURATION);
             
             // Old move test
-            /*Vector2Int targetTile = SimulationContext.MapData.Tiles.ElementAt(Random.Range(0, SimulationContext.MapData.Tiles.Count)).Key;
+            Vector2Int targetTile = SimulationContext.MapData.Tiles.ElementAt(Random.Range(0, SimulationContext.MapData.Tiles.Count)).Key;
             float GetDistance(Vector2Int origin, Vector2Int target) => HexagonHelper.Distance(origin, target);
 
             List<Vector2Int> path = AStar.GetPath(this.entity.Position, targetTile, GetDistance, GetDistance, SimulationContext.MapData.GetTileNeighbours);
-            return new MoveState(this.entity, path);*/
+            return new MoveState(this.entity, path);
         }
     }
 }

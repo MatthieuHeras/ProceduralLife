@@ -4,7 +4,7 @@ using UnityEngine;
 namespace ProceduralLife.Simulation
 {
     [CreateAssetMenu(fileName = "NewBrain", menuName = Constants.Editor.PATH_ENTITY + "Brain")]
-    public class SimulationEntityBrainDefinition : StateMachineDefinition
+    public class SimulationEntityBrainDefinition : ScriptableObject
     {
         [field: SerializeField]
         public List<GoalDefinition> Dangers { get; private set; } = new();

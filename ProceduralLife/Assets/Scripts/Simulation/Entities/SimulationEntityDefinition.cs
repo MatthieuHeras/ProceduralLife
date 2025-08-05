@@ -27,5 +27,10 @@ namespace ProceduralLife.Simulation
         // How much is deducted from the hunger each second.
         [field: SerializeField, MinValue(0)]
         public long HungerRate { get; private set; } = 10;
+        
+        // [TODO] Make it a stat
+        // How much is deducted from the hunger each second.
+        [field: SerializeField, MinValue(1)]
+        public uint SightRange { get; private set; } = 3;
     }
 }

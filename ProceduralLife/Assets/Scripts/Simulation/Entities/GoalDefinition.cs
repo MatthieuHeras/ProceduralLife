@@ -11,6 +11,6 @@ namespace ProceduralLife.Simulation
         public GameConditionField Condition { get; private set; }
         // [TODO] Implement behaviours
         [field: SerializeField]
-        public BehaviourDefinition Behaviour { get; private set; }
+        public BehaviourField Behaviour { get; private set; }
     }
 }
