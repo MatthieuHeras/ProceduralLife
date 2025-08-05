@@ -8,7 +8,7 @@ namespace ProceduralLife.Map
     [Serializable]
     public record MapData
     {
-        public readonly Dictionary<Vector2Int, TileDefinition> Tiles = new();
+        public readonly Dictionary<Vector2Int, Tile> Tiles = new();
         
         public Vector2Int[] GetTileNeighbours(Vector2Int tilePosition)
         {
@@ -23,6 +23,11 @@ namespace ProceduralLife.Map
             HexagonHelper.ApplyOnNeighbours(tilePosition, Action);
             
             return neighbours.ToArray();
+        }
+
+        public void AddTile(Vector2Int position, TileDefinition definition)
+        {
+            this.Tiles[position] = new Tile(definition);
         }
     }
 }

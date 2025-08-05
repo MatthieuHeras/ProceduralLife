@@ -31,7 +31,7 @@ namespace ProceduralLife.MapEditor
         {
             Assert.IsTrue(!this.mapData.Tiles.ContainsKey(tilePosition));
             
-            this.mapData.Tiles.Add(tilePosition, tile);
+            this.mapData.AddTile(tilePosition, tile);
             
             AddedTileEvent.Invoke(tilePosition, tile);
         }

@@ -64,7 +64,9 @@ namespace ProceduralLife.Simulation
         
         public void MoveEnd(Vector2Int newPosition)
         {
+            SimulationContext.MapData.Tiles[this.Position].Entities.Remove(this);
             this.Position = newPosition;
+            SimulationContext.MapData.Tiles[this.Position].Entities.Add(this);
             this.MoveEndEvent.Invoke(newPosition);
         }
 

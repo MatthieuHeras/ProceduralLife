@@ -81,8 +81,9 @@ namespace ProceduralLife.Simulation
             this.iterateMethod = iterationMethodType switch
             {
                 E_IterationMethodType.PLAY => this.IterateForward,
+                E_IterationMethodType.BACKWARD => this.IterateBackward,
                 E_IterationMethodType.REPLAY => this.IterateReplay,
-                E_IterationMethodType.BACKWARD => this.IterateBackward
+                _ => throw new ArgumentOutOfRangeException(nameof(iterationMethodType), iterationMethodType, null)
             };
             
             IterationMethodChanged.Invoke(iterationMethodType);

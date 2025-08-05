@@ -15,7 +15,7 @@ namespace ProceduralLife.MapEditor
         
         public override void Do()
         {
-            this.oldTileDefinition = this.mapData.Tiles[this.tilePosition];
+            this.oldTileDefinition = this.mapData.Tiles[this.tilePosition].Definition;
             this.RemoveTile(this.tilePosition);
         }
 

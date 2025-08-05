@@ -23,7 +23,7 @@ namespace ProceduralLife.MapEditor
         public void Init(TileDefinition newTileDefinition)
         {
             this.tileDefinition = newTileDefinition;
-            this.title.text = this.tileDefinition.Name;
+            this.title.text = this.tileDefinition.name;
         }
         
         private void OnToggleValueChanged(bool value)
