@@ -33,6 +33,12 @@ namespace ProceduralLife.Simulation
         [field: SerializeField, MinValue(1)]
         public uint SightRange { get; private set; } = 3;
         
+        // [TODO] Make it a stat
+        // How much worth it is to other entities.
+        // Negative values are supported, this is intentional.
+        [field: SerializeField]
+        public long FoodValue { get; private set; } = 300;
+        
         // [TODO] Implement a tag system
         [field: SerializeField]
         public E_EntityType Type { get; private set; }

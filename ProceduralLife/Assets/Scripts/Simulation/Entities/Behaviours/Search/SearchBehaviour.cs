@@ -2,7 +2,6 @@
 using ProceduralLife.Map;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Assertions;
 
 namespace ProceduralLife.Simulation
 {
@@ -30,8 +29,21 @@ namespace ProceduralLife.Simulation
             if (this.state != null)
                 return this.state;
             
-            if (searchState == SearchState.LOOKING && this.TryFindTarget())
-                searchState = SearchState.CHASING;
+            // Check if we have reached our current goal
+            switch (this.searchState)
+            {
+                case SearchState.LOOKING:
+                    if (this.TryFindTarget())
+                        searchState = SearchState.CHASING;
+                    break;
+                case SearchState.CHASING:
+                    if (this.target.Position == this.entity.Position)
+                        searchState = SearchState.EATING;
+                    break;
+                default:
+                    Debug.LogError($"Reached unsupported code flow, current search state: {this.searchState}");
+                    return null;
+            }
             
             switch (this.searchState)
             {
@@ -40,9 +52,11 @@ namespace ProceduralLife.Simulation
                     return new MoveState(this.entity, new List<Vector2Int>(2) {this.entity.Position, neighbours[Random.Range(0, neighbours.Length)]});
                 case SearchState.CHASING:
                     return new MoveState(this.entity, this.pathToTarget);
+                case SearchState.EATING:
+                    return new EatState(this.entity, this.target);
             }
             
-            Assert.IsTrue(0 == 1);
+            Debug.LogError($"Reached unsupported code flow, current search state: {this.searchState}");
             return null;
         }
 
