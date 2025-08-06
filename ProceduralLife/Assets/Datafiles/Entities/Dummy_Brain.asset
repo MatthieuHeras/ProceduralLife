@@ -15,20 +15,22 @@ MonoBehaviour:
   <Dangers>k__BackingField: []
   <Needs>k__BackingField:
   - <Condition>k__BackingField:
-      configurableSO: {fileID: 11400000, guid: ec36911061f901446bfaf4f186a15b85, type: 2}
+      configurableSO: {fileID: 11400000, guid: eb0a1c35817aa6147bbb49acadaa53c3, type: 2}
       parameter:
-        rid: -2
+        rid: 8769129854187077730
     <Behaviour>k__BackingField:
       configurableSO: {fileID: 11400000, guid: 323d1f5e51ba4f44fb29c4810adb210c, type: 2}
       parameter:
-        rid: 8769129821111320691
+        rid: 8769129854187077731
   <Wants>k__BackingField: []
   references:
     version: 2
     RefIds:
-    - rid: -2
-      type: {class: , ns: , asm: }
-    - rid: 8769129821111320691
+    - rid: 8769129854187077730
+      type: {class: LongWrapper, ns: MHLib.ConfigurableSO, asm: MHLib}
+      data:
+        <Value>k__BackingField: 500
+    - rid: 8769129854187077731
       type: {class: SearchBehaviourParameter, ns: ProceduralLife.Simulation, asm: ProceduralLife}
       data:
         <EntityType>k__BackingField: 0

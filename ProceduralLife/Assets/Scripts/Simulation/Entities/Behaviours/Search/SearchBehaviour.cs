@@ -54,7 +54,10 @@ namespace ProceduralLife.Simulation
                 case SearchState.CHASING:
                     return new MoveState(this.entity, this.pathToTarget);
                 case SearchState.EATING:
+                {
+                    this.target.DeathEvent -= this.OnTargetDeath;
                     return new EatState(this.entity, this.target);
+                }
             }
             
             Debug.LogError($"Reached unsupported code flow, current search state: {this.searchState}");
