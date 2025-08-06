@@ -16,9 +16,9 @@ MonoBehaviour:
   <Needs>k__BackingField: []
   <Wants>k__BackingField:
   - <Condition>k__BackingField:
-      configurableSO: {fileID: 11400000, guid: f83170bfd851736458a73c2737e186ea, type: 2}
+      configurableSO: {fileID: 11400000, guid: ec36911061f901446bfaf4f186a15b85, type: 2}
       parameter:
-        rid: 8769129846708633684
+        rid: -2
     <Behaviour>k__BackingField:
       configurableSO: {fileID: 11400000, guid: dee36d93a4e51384885790347bfe4afd, type: 2}
       parameter:
@@ -26,9 +26,8 @@ MonoBehaviour:
   references:
     version: 2
     RefIds:
-    - rid: 8769129846708633684
-      type: {class: Int32, ns: System, asm: mscorlib}
-      data: 
+    - rid: -2
+      type: {class: , ns: , asm: }
     - rid: 8769129846708633685
       type: {class: WaitBehaviourParameter, ns: ProceduralLife.Simulation, asm: ProceduralLife}
       data:

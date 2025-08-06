@@ -15,9 +15,9 @@ MonoBehaviour:
   <Dangers>k__BackingField: []
   <Needs>k__BackingField:
   - <Condition>k__BackingField:
-      configurableSO: {fileID: 11400000, guid: f83170bfd851736458a73c2737e186ea, type: 2}
+      configurableSO: {fileID: 11400000, guid: ec36911061f901446bfaf4f186a15b85, type: 2}
       parameter:
-        rid: 8769129821111320690
+        rid: -2
     <Behaviour>k__BackingField:
       configurableSO: {fileID: 11400000, guid: 323d1f5e51ba4f44fb29c4810adb210c, type: 2}
       parameter:
@@ -26,9 +26,9 @@ MonoBehaviour:
   references:
     version: 2
     RefIds:
-    - rid: 8769129821111320690
-      type: {class: Int32, ns: System, asm: mscorlib}
-      data: 
+    - rid: -2
+      type: {class: , ns: , asm: }
     - rid: 8769129821111320691
       type: {class: SearchBehaviourParameter, ns: ProceduralLife.Simulation, asm: ProceduralLife}
-      data: 
+      data:
+        <EntityType>k__BackingField: 0
