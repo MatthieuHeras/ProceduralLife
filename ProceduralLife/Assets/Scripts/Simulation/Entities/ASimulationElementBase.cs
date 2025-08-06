@@ -20,12 +20,12 @@ namespace ProceduralLife.Simulation
             this.PreviousExecutionMoment = null;
         }
         
-        public void ReachBirthMoment(bool timeIsForward)
+        public virtual void ReachBirthMoment(bool timeIsForward)
         {
             this.BirthEvent.Invoke(timeIsForward);
         }
         
-        public void ReachDeathMoment(bool timeIsForward)
+        public virtual void ReachDeathMoment(bool timeIsForward)
         {
             this.DeathEvent.Invoke(timeIsForward);
         }

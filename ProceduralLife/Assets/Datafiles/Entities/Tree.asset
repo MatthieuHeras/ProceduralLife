@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 51faee66d46649df8a259bd47a654ad1, type: 3}
+  m_Name: Tree
+  m_EditorClassIdentifier: 
+  <View>k__BackingField: {fileID: 1136233462868858159, guid: 7bc8c1b2ee4ee9f4cb6abab75354c1b4, type: 3}
+  <BrainDefinition>k__BackingField: {fileID: 11400000, guid: efdea570906e5c447b084d9a91a5af79, type: 2}
+  <Speed>k__BackingField: 0
+  <MaxHunger>k__BackingField: 1
+  <HungerRate>k__BackingField: 0
+  <SightRange>k__BackingField: 1
+  <FoodValue>k__BackingField: 300
+  <Type>k__BackingField: 0

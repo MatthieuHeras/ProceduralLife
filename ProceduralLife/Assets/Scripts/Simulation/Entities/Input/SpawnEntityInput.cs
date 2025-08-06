@@ -23,8 +23,8 @@ namespace ProceduralLife.Simulation
             SimulationEntityView entityView = Object.Instantiate(this.entityDefinition.View);
             entityView.Init(entity);
             
-            SimulationContext.SimulationTime.SpawnElement(entity, this.inputElement.NextExecutionMoment.Time);
             this.entity.MoveEnd(spawnPosition);
+            SimulationContext.SimulationTime.SpawnElement(entity, this.inputElement.NextExecutionMoment.Time);
         }
 
         public override void Undo()

@@ -398,6 +398,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   testEntity: {fileID: 11400000, guid: 4f14d6fb41815d840b3197fa7a877ecb, type: 2}
+  treeEntity: {fileID: 11400000, guid: b1ff891a2986395428b39f4a612077ac, type: 2}
 --- !u!4 &1588053638
 Transform:
   m_ObjectHideFlags: 0

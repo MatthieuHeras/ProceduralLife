@@ -10,6 +10,7 @@ namespace ProceduralLife.Simulation
         public SearchBehaviour(BehaviourContext context, SearchBehaviourParameter parameter) : base(context)
         {
             this.parameter = parameter;
+            this.entity.DeathEvent += this.OnSelfDeath;
         }
         
         private enum SearchState
@@ -70,7 +71,7 @@ namespace ProceduralLife.Simulation
                 {
                     if (tileEntity != this.entity && tileEntity.Definition.Type == this.parameter.EntityType)
                     {
-                        this.target = tileEntity;
+                        this.SetTarget(tileEntity);
                         return true;
                     }
                 }
@@ -81,6 +82,31 @@ namespace ProceduralLife.Simulation
             this.pathToTarget = Dijkstra.GetClosestNode(this.entity.Position, (_, _) => 1f, (node) => map.GetTileNeighbours(node.Node), HasTarget, this.entity.SightRange);
             
             return this.pathToTarget.Count > 0;
+        }
+
+        private void SetTarget(SimulationEntity newTarget)
+        {
+            this.target = newTarget;
+            newTarget.DeathEvent += this.OnTargetDeath;
+        }
+
+        private void OnTargetDeath(bool timeIsForward)
+        {
+            this.target.DeathEvent -= this.OnTargetDeath;
+            this.target = null;
+            this.pathToTarget = null;
+            this.searchState = SearchState.LOOKING;
+        }
+
+        private void OnSelfDeath(bool timeIsForward)
+        {
+            if (this.target != null)
+            {
+                if (timeIsForward)
+                    this.target.DeathEvent -= this.OnTargetDeath;
+                else
+                    this.target.DeathEvent += this.OnTargetDeath;
+            }
         }
 
         protected override bool ShouldStop()

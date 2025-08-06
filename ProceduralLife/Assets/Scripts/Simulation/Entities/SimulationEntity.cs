@@ -56,7 +56,27 @@ namespace ProceduralLife.Simulation
             this.state = stateMomentData.StateData.State;
             this.state.Redo(stateMomentData.StateData);
         }
+        
+        public override void ReachBirthMoment(bool timeIsForward)
+        {
+            base.ReachBirthMoment(timeIsForward);
 
+            if (timeIsForward)
+                SimulationContext.MapData.Tiles[this.Position].Entities.Add(this);
+            else
+                SimulationContext.MapData.Tiles[this.Position].Entities.Remove(this);
+        }
+        
+        public override void ReachDeathMoment(bool timeIsForward)
+        {
+            base.ReachDeathMoment(timeIsForward);
+
+            if (timeIsForward)
+                SimulationContext.MapData.Tiles[this.Position].Entities.Remove(this);
+            else
+                SimulationContext.MapData.Tiles[this.Position].Entities.Add(this);
+        }
+        
         public void MoveStart(Vector2Int newTarget, ulong startMoment, ulong duration, bool forward)
         {
             this.MoveStartEvent.Invoke(newTarget, startMoment, duration, forward);

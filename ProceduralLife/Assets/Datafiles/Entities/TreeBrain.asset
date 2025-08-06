@@ -1,0 +1,35 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e8cb95c754ad4f8e8f7989d6608e64c7, type: 3}
+  m_Name: TreeBrain
+  m_EditorClassIdentifier: 
+  <Dangers>k__BackingField: []
+  <Needs>k__BackingField: []
+  <Wants>k__BackingField:
+  - <Condition>k__BackingField:
+      configurableSO: {fileID: 11400000, guid: f83170bfd851736458a73c2737e186ea, type: 2}
+      parameter:
+        rid: 8769129846708633684
+    <Behaviour>k__BackingField:
+      configurableSO: {fileID: 11400000, guid: dee36d93a4e51384885790347bfe4afd, type: 2}
+      parameter:
+        rid: 8769129846708633685
+  references:
+    version: 2
+    RefIds:
+    - rid: 8769129846708633684
+      type: {class: Int32, ns: System, asm: mscorlib}
+      data: 
+    - rid: 8769129846708633685
+      type: {class: WaitBehaviourParameter, ns: ProceduralLife.Simulation, asm: ProceduralLife}
+      data:
+        <Duration>k__BackingField: 100000

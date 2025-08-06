@@ -1,9 +1,5 @@
-﻿using MHLib;
-using MHLib.Hexagon;
-using ProceduralLife.Conditions;
+﻿using ProceduralLife.Conditions;
 using System.Collections.Generic;
-using System.Linq;
-using UnityEngine;
 
 namespace ProceduralLife.Simulation
 {
