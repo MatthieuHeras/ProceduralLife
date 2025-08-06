@@ -21,8 +21,7 @@ namespace ProceduralLife.Simulation
             
             this.state = doData.NextState;
             
-            bool shouldStop = this.canEnd && this.state == null;
-            AState nextState = shouldStop ? null : this;
+            AState nextState = this.ShouldStop() ? null : this;
             
             return new StateDoData(new StateMachineData(doData.StateData), doData.Delay, nextState);
         }
@@ -46,5 +45,7 @@ namespace ProceduralLife.Simulation
         }
         
         protected abstract AState GetNewState();
+        
+        protected virtual bool ShouldStop() => this.canEnd && this.state == null;
     }
 }

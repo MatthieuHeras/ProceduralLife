@@ -16,7 +16,8 @@ namespace ProceduralLife.Simulation
         private enum SearchState
         {
             LOOKING,
-            CHASING
+            CHASING,
+            EATING
         }
         
         private readonly SearchBehaviourParameter parameter;
@@ -66,6 +67,12 @@ namespace ProceduralLife.Simulation
             this.pathToTarget = Dijkstra.GetClosestNode(this.entity.Position, (_, _) => 1f, (node) => map.GetTileNeighbours(node.Node), HasTarget, this.entity.SightRange);
             
             return this.pathToTarget.Count > 0;
+        }
+
+        protected override bool ShouldStop()
+        {
+            // Has finished eating.
+            return base.ShouldStop() && this.searchState == SearchState.EATING;
         }
     }
 }

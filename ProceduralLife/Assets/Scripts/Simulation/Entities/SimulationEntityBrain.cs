@@ -65,14 +65,7 @@ namespace ProceduralLife.Simulation
             
             // 6 - It waits. This should never occur in a properly integrated AI and is more of a safety thing.
             // Feel free to integrate wandering or waiting as something the entity wants, with low priority.
-            //return new WaitState(this.entity, Constants.Simulation.DEFAULT_WAIT_DURATION);
-            
-            // Old move test
-            Vector2Int targetTile = SimulationContext.MapData.Tiles.ElementAt(Random.Range(0, SimulationContext.MapData.Tiles.Count)).Key;
-            float GetDistance(Vector2Int origin, Vector2Int target) => HexagonHelper.Distance(origin, target);
-
-            List<Vector2Int> path = AStar.GetPath(this.entity.Position, targetTile, GetDistance, GetDistance, SimulationContext.MapData.GetTileNeighbours);
-            return new MoveState(this.entity, path);
+            return new WaitState(this.entity, Constants.Simulation.DEFAULT_WAIT_DURATION);
         }
     }
 }
