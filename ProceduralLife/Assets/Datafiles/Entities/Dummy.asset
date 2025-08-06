@@ -15,3 +15,7 @@ MonoBehaviour:
   <View>k__BackingField: {fileID: 1136233462868858159, guid: c1408628e8b97784bb90c1202222cd8d, type: 3}
   <BrainDefinition>k__BackingField: {fileID: 11400000, guid: 2e7fa6cd5fd111d48ae42f821f7e1a41, type: 2}
   <Speed>k__BackingField: 2
+  <MaxHunger>k__BackingField: 1000
+  <HungerRate>k__BackingField: 10
+  <SightRange>k__BackingField: 3
+  <Type>k__BackingField: 1

@@ -32,5 +32,9 @@ namespace ProceduralLife.Simulation
         // How much is deducted from the hunger each second.
         [field: SerializeField, MinValue(1)]
         public uint SightRange { get; private set; } = 3;
+        
+        // [TODO] Implement a tag system
+        [field: SerializeField]
+        public E_EntityType Type { get; private set; }
     }
 }

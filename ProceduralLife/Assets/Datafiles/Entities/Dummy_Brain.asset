@@ -12,9 +12,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e8cb95c754ad4f8e8f7989d6608e64c7, type: 3}
   m_Name: Dummy_Brain
   m_EditorClassIdentifier: 
-  <Dangers>k__BackingField:
-  - Condition: 0
-  <Needs>k__BackingField: []
-  <Wants>k__BackingField:
-  - Condition: 0
-  - Condition: 0
+  <Dangers>k__BackingField: []
+  <Needs>k__BackingField:
+  - <Condition>k__BackingField:
+      configurableSO: {fileID: 11400000, guid: f83170bfd851736458a73c2737e186ea, type: 2}
+      parameter:
+        rid: 8769129821111320690
+    <Behaviour>k__BackingField:
+      configurableSO: {fileID: 11400000, guid: 323d1f5e51ba4f44fb29c4810adb210c, type: 2}
+      parameter:
+        rid: 8769129821111320691
+  <Wants>k__BackingField: []
+  references:
+    version: 2
+    RefIds:
+    - rid: 8769129821111320690
+      type: {class: Int32, ns: System, asm: mscorlib}
+      data: 
+    - rid: 8769129821111320691
+      type: {class: SearchBehaviourParameter, ns: ProceduralLife.Simulation, asm: ProceduralLife}
+      data: 

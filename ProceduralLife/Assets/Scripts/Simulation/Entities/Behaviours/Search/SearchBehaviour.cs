@@ -53,8 +53,7 @@ namespace ProceduralLife.Simulation
             {
                 foreach (SimulationEntity tileEntity in map.Tiles[node.Node].Entities)
                 {
-                    // [TODO] Implement targeting
-                    if (tileEntity != this.entity)
+                    if (tileEntity != this.entity && tileEntity.Definition.Type == this.parameter.EntityType)
                     {
                         this.target = tileEntity;
                         return true;
