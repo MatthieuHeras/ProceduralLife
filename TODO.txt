@@ -1,6 +1,4 @@
-- Properly track entities on tiles (especially on death/birth)
-- Implement trees as entities
-- Implement behaviours
+- Reproduction behaviour
 - Stat system:
   - Speed
   - Hunger
