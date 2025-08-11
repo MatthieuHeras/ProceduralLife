@@ -4,7 +4,7 @@ using UnityEngine;
 namespace ProceduralLife.Simulation
 {
     [Serializable]
-    public record SearchBehaviourParameter
+    public record HuntBehaviourParameter
     {
         [field: SerializeField]
         public E_EntityType EntityType { get; private set; }

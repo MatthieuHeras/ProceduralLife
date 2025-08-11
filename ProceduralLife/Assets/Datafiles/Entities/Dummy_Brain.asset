@@ -19,9 +19,9 @@ MonoBehaviour:
       parameter:
         rid: 8769129854187077730
     <Behaviour>k__BackingField:
-      configurableSO: {fileID: 11400000, guid: 323d1f5e51ba4f44fb29c4810adb210c, type: 2}
+      configurableSO: {fileID: 11400000, guid: 76d4b7dfcbceb4a46a1167a23d2db5a9, type: 2}
       parameter:
-        rid: 8769129854187077731
+        rid: 8769129956993400888
   <Wants>k__BackingField: []
   references:
     version: 2
@@ -30,7 +30,7 @@ MonoBehaviour:
       type: {class: LongWrapper, ns: MHLib.ConfigurableSO, asm: MHLib}
       data:
         <Value>k__BackingField: 500
-    - rid: 8769129854187077731
-      type: {class: SearchBehaviourParameter, ns: ProceduralLife.Simulation, asm: ProceduralLife}
+    - rid: 8769129956993400888
+      type: {class: HuntBehaviourParameter, ns: ProceduralLife.Simulation, asm: ProceduralLife}
       data:
         <EntityType>k__BackingField: 0

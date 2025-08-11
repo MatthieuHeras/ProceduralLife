@@ -5,11 +5,11 @@ using UnityEngine;
 
 namespace ProceduralLife.Simulation
 {
-    public class SearchBehaviour : ABehaviour
+    public abstract class ASearchBehaviour : ABehaviour
     {
-        public SearchBehaviour(BehaviourContext context, SearchBehaviourParameter parameter) : base(context)
+        protected ASearchBehaviour(BehaviourContext context, bool shouldChase) : base(context)
         {
-            this.parameter = parameter;
+            this.shouldChase = shouldChase;
             this.entity.DeathEvent += this.OnSelfDeath;
         }
         
@@ -17,13 +17,16 @@ namespace ProceduralLife.Simulation
         {
             LOOKING,
             CHASING,
-            EATING
+            INTERACTING
         }
-        
-        private readonly SearchBehaviourParameter parameter;
+
+        private readonly bool shouldChase;
         private SearchState searchState = SearchState.LOOKING;
-        private SimulationEntity target = null;
-        private List<Vector2Int> pathToTarget = null;
+        protected SimulationEntity target = null;
+        protected List<Vector2Int> pathToTarget = null;
+
+        protected abstract AState GetInteractionState();
+        protected abstract bool IsTargetValid(SimulationEntity targetEntity);
         
         protected override AState GetNewState()
         {
@@ -35,11 +38,11 @@ namespace ProceduralLife.Simulation
             {
                 case SearchState.LOOKING:
                     if (this.TryFindTarget())
-                        searchState = SearchState.CHASING;
+                        searchState = this.shouldChase ? SearchState.CHASING : SearchState.INTERACTING;
                     break;
                 case SearchState.CHASING:
                     if (this.target.Position == this.entity.Position)
-                        searchState = SearchState.EATING;
+                        searchState = SearchState.INTERACTING;
                     break;
                 default:
                     Debug.LogError($"Reached unsupported code flow, current search state: {this.searchState}");
@@ -53,10 +56,10 @@ namespace ProceduralLife.Simulation
                     return new MoveState(this.entity, new List<Vector2Int>(2) {this.entity.Position, neighbours[Random.Range(0, neighbours.Length)]});
                 case SearchState.CHASING:
                     return new MoveState(this.entity, this.pathToTarget);
-                case SearchState.EATING:
+                case SearchState.INTERACTING:
                 {
                     this.target.DeathEvent -= this.OnTargetDeath;
-                    return new EatState(this.entity, this.target);
+                    return this.GetInteractionState();
                 }
             }
             
@@ -72,7 +75,7 @@ namespace ProceduralLife.Simulation
             {
                 foreach (SimulationEntity tileEntity in map.Tiles[node.Node].Entities)
                 {
-                    if (tileEntity != this.entity && tileEntity.Definition.Type == this.parameter.EntityType)
+                    if (tileEntity != this.entity && this.IsTargetValid(tileEntity))
                     {
                         this.SetTarget(tileEntity);
                         return true;
@@ -114,8 +117,8 @@ namespace ProceduralLife.Simulation
 
         protected override bool ShouldStop()
         {
-            // Has finished eating.
-            return base.ShouldStop() && this.searchState == SearchState.EATING;
+            // Has finished interacting.
+            return base.ShouldStop() && this.searchState == SearchState.INTERACTING;
         }
     }
 }
