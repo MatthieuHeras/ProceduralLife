@@ -1,5 +1,6 @@
 ﻿using System;
 using UnityEngine;
+using UnityEngine.Assertions;
 using Random = UnityEngine.Random;
 
 namespace ProceduralLife.Simulation
@@ -9,7 +10,7 @@ namespace ProceduralLife.Simulation
         public SimulationEntity(SimulationEntityDefinition definition)
         {
             this.Definition = definition;
-            this.state = new SimulationEntityBrain(definition.BrainDefinition, this);
+            this.brain = new SimulationEntityBrain(definition.BrainDefinition, this);
             
             // [TODO] Implement proper stat system
             this.Speed = definition.Speed * Random.Range(0.5f, 2f);
@@ -29,32 +30,32 @@ namespace ProceduralLife.Simulation
         public event Action<Vector2Int> MoveEndEvent = delegate { };
         public event Action HungerChanged = delegate { }; 
         
-        private AState state;
+        private readonly SimulationEntityBrain brain;
 
         protected override StateMomentData ApplyDo()
         {
-            StateDoData stateDoData = this.state.Do();
+            StateDoData stateDoData = this.brain.Do();
             SimulationMoment executionMoment = this.NextExecutionMoment;
             SimulationMoment nextMoment = SimulationContext.SimulationTime.DelayElement(this, stateDoData.Delay);
             
-            stateDoData.StateData.InitState(this.state)
+            stateDoData.StateData.InitState(this.brain)
                                  .InitExecutionMoments(executionMoment, this.NextExecutionMoment);
             
-            this.state = stateDoData.NextState;
+            Assert.IsTrue(stateDoData.NextState == this.brain);
             
             return new StateMomentData(nextMoment, stateDoData.StateData);
         }
 
         protected override void ApplyUndo(StateMomentData stateMomentData)
         {
-            this.state = stateMomentData.StateData.State;
-            this.state.Undo(stateMomentData.StateData);
+            Assert.IsTrue(stateMomentData.StateData.State == this.brain);
+            this.brain.Undo(stateMomentData.StateData);
         }
 
         protected override void ApplyRedo(StateMomentData stateMomentData)
         {
-            this.state = stateMomentData.StateData.State;
-            this.state.Redo(stateMomentData.StateData);
+            Assert.IsTrue(stateMomentData.StateData.State == this.brain);
+            this.brain.Redo(stateMomentData.StateData);
         }
         
         public override void ReachBirthMoment(bool timeIsForward)
